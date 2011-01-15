@@ -4,7 +4,7 @@ def include(config):
     """include formalchemy's zcml"""
     config.load_zcml('pyramid.includes:configure.zcml')
     config.load_zcml('pyramid_formalchemy:configure.zcml')
-    config.load_zcml('pyramid_formalchemy:views.zcml')
+    config.load_zcml('pyramid_formalchemy:view.zcml')
 
 def include_jquery(config):
     """include formalchemy's zcml"""

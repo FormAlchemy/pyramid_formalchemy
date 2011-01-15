@@ -1,8 +1,5 @@
 <?xml version="1.0"?>
-<configure
-    xmlns="http://namespaces.zope.org/zope"
-    xmlns:browser="http://namespaces.zope.org/browser"
-    >
+<configure xmlns="http://pylonshq.com/pyramid">
 
 <view
     name=""
