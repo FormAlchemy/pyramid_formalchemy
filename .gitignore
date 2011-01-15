@@ -16,3 +16,4 @@ include/
 *.pyc
 *.pyo
 *.log
+*.db
