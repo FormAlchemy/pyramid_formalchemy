@@ -8,7 +8,7 @@ class AdminView(object):
         request.format = 'html'
         self.__parent__ = self.__name__ = None
     def __getitem__(self, item):
-        if item in ('json',):
+        if item in ('json', 'xhr'):
             self.request.format = item
             return self
         model = ModelListing(self.request, item)
@@ -22,7 +22,7 @@ class ModelListing(object):
         self.__name__ = name
         self.__parent__ = None
     def __getitem__(self, item):
-        if item in ('json',):
+        if item in ('json', 'xhr'):
             self.request.format = item
             return self
         if item in ('new',):

@@ -11,7 +11,9 @@ from formalchemy import fatypes
 from pyramid.view import view_config
 from pyramid.renderers import render
 from pyramid.renderers import get_renderer
+from pyramid.response import Response
 from pyramid import httpexceptions as exc
+from pyramid.exceptions import NotFound
 
 try:
     from formalchemy.ext.couchdb import Document
@@ -99,7 +101,7 @@ class ModelView(object):
                     return model
         elif hasattr(self.model, self.model_name):
             return getattr(self.model, self.model_name)
-        raise exc.HTTPNotFound(description='model %s not found' % self.model_name)
+        raise NotFound()
 
     def get_fieldset(self, id):
         if self.forms and hasattr(self.forms, self.model_name):
@@ -166,7 +168,7 @@ class ModelView(object):
             if meth is not None:
                 return meth(**kwargs)
             else:
-                return exc.HTTPNotfound()
+                raise NotFound()
         kwargs.update(
                       main = get_renderer('pyramid_formalchemy:templates/admin/master.pt').implementation(),
                       model_name=self.model_name,
@@ -196,18 +198,18 @@ class ModelView(object):
         return data
 
     def render_xhr_format(self, fs=None, **kwargs):
-        response.content_type = 'text/html'
+        self.request.response_content_type = 'text/html'
         if fs is not None:
-            if 'field' in request.GET:
-                field_name = request.GET.get('field')
+            if 'field' in self.request.GET:
+                field_name = self.request.GET.get('field')
                 fields = fs.render_fields
                 if field_name in fields:
                     field = fields[field_name]
                     return field.render()
                 else:
-                    return exc.HTTPNotfound()
-            return fs.render()
-        return ''
+                    raise NotFound()
+            return Response(fs.render())
+        return Response('')
 
     def get_page(self, **kwargs):
         """return a ``webhelpers.paginate.Page`` used to display ``Grid``.
@@ -252,7 +254,7 @@ class ModelView(object):
             model = S.query(model).get(id)
         if model:
             return model
-        raise exc.HTTPNotFound()
+        raise NotFound()
 
     def get_fieldset(self, id=None):
         """return a ``FieldSet`` object bound to the correct record for ``id``.

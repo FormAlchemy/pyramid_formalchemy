@@ -13,8 +13,8 @@ def main(global_config, **settings):
     config.add_static_view('static', 'pyramidapp:static')
     config.add_route('home', '/', view='pyramidapp.views.my_view',
                      view_renderer='templates/mytemplate.pt')
-    pyramid_formalchemy.include(config)
-    pyramid_formalchemy.configure(config, package='pyramidapp')
+    pyramid_formalchemy.include_jquery(config)
+    pyramid_formalchemy.configure(config, package='pyramidapp', use_jquery=True)
     return config.make_wsgi_app()
 
 
