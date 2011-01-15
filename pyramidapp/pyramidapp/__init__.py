@@ -2,6 +2,7 @@ from pyramid.config import Configurator
 from sqlalchemy import engine_from_config
 
 from pyramidapp.models import initialize_sql
+import pyramid_formalchemy
 
 def main(global_config, **settings):
     """ This function returns a Pyramid WSGI application.
@@ -12,14 +13,8 @@ def main(global_config, **settings):
     config.add_static_view('static', 'pyramidapp:static')
     config.add_route('home', '/', view='pyramidapp.views.my_view',
                      view_renderer='templates/mytemplate.pt')
-    config.load_zcml('pyramid_formalchemy:configure.zcml')
-    config.add_route('fa_admin', '/admin/*traverse',
-                     factory='pyramid_formalchemy.resources.AdminView')
-    config.registry.settings.update({
-        'fa.models': config.maybe_dotted('pyramidapp.models'),
-        'fa.forms': config.maybe_dotted('pyramidapp.forms'),
-        'fa.session_factory': config.maybe_dotted('pyramidapp.models.DBSession'),
-        })
+    pyramid_formalchemy.include(config)
+    pyramid_formalchemy.configure(config, package='pyramidapp')
     return config.make_wsgi_app()
 
 
