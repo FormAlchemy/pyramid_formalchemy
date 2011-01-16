@@ -35,9 +35,13 @@ def configure(config, models=None, forms=None, session_factory=None, package=Non
         'fa.session_factory': session_factory,
         })
 
+    prefix = prefix.rstrip('/')
+    if not prefix:
+        prefix = '/'
+
     if use_jquery:
-        config.add_route('fa_admin', '/%s/*traverse' % prefix,
+        config.add_route('fa_admin', '%s/*traverse' % prefix,
                          factory='pyramid_formalchemy.resources.AdminView')
     else:
-        config.add_route('fa_admin', '/%s/*traverse' % prefix,
+        config.add_route('fa_admin', '%s/*traverse' % prefix,
                          factory='pyramid_formalchemy.resources.AdminView')
