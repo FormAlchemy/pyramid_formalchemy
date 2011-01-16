@@ -3,13 +3,65 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
+===============================================
 Welcome to pyramid_formalchemy's documentation!
 ===============================================
 
-Contents:
+Installation
+============
+
+With easy_install::
+
+  $ easy_install pyramid_formalchemy
+
+It's also highly recommended to install fa.jquery to get a nicer interface::
+
+  $ easy_install fa.jquery
+
+Usage
+======
+
+Add an empty ``forms.py`` module at the root of your project.
+
+Now you just need to include two line of configuration in the ``__init__.main()`` function of your project.
+Here is the one used for testing:
+
+.. literalinclude:: ../pyramidapp/pyramidapp/__init__.py
+
+This will render the **basic** formalchemy interface.
+
+It's better to enable the jquery stuff like this:
+
+.. literalinclude:: ../../formalchemy_project/__init__.py
+
+
+That's it. Now launch your app, browse ``/admin/`` and enjoy it !
+
+Advanced usage
+===============
+
+In the toward examples we just pass a ``package`` parameter to
+:func:`~pyramid_formalchemy.configure`.  By default the function will try to
+load ``package.models`` ``package.models.DBSession`` and ``package.forms`` but
+you can override this. In this case you don't need to specify a package::
+
+
+    pyramid_formalchemy.configure(config,
+                                  models='formalchemy_project.mymodels',
+                                  session_factory='formalchemy_project.session.Session',
+                                  forms='formalchemy_project',
+                                  use_jquery=True)
+
+You can also change the path ``prefix`` used. pyramid_formalchemy will use
+``/admin/`` by default. See :func:`~pyramid_formalchemy.configure`.
+
+Api
+===
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
+
+   modules/index.txt
 
 Indices and tables
 ==================

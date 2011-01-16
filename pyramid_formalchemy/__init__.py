@@ -7,12 +7,12 @@ def include(config):
     config.load_zcml('pyramid_formalchemy:view.zcml')
 
 def include_jquery(config):
-    """include formalchemy's zcml"""
+    """include formalchemy and fa.jquery's zcml """
     config.load_zcml('pyramid.includes:configure.zcml')
     config.load_zcml('pyramid_formalchemy:configure.zcml')
     config.load_zcml('fa.jquery:configure.zcml')
 
-def configure(config, models=None, forms=None, session_factory=None, package=None, use_jquery=True):
+def configure(config, models=None, forms=None, session_factory=None, package=None, prefix='/admin', use_jquery=True):
     """configure formalchemy's admin interface"""
     if models:
         models = config.maybe_dotted(models)
@@ -36,8 +36,8 @@ def configure(config, models=None, forms=None, session_factory=None, package=Non
         })
 
     if use_jquery:
-        config.add_route('fa_admin', '/admin/*traverse',
+        config.add_route('fa_admin', '/%s/*traverse' % prefix,
                          factory='pyramid_formalchemy.resources.AdminView')
     else:
-        config.add_route('fa_admin', '/admin/*traverse',
+        config.add_route('fa_admin', '/%s/*traverse' % prefix,
                          factory='pyramid_formalchemy.resources.AdminView')

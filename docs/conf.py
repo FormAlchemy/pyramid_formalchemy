@@ -220,6 +220,16 @@ man_pages = [
 intersphinx_mapping = {'http://docs.python.org/': None}
 
 html_theme = 'nature'
+rstctl_exclude = ['fa.jquery.app', 'fa.jquery.pylons']
+
+try:
+    import rstctl
+    extensions.append('rstctl.sphinx')
+except ImportError:
+    pass
+else:
+    del rstctl
+
 from os import path
 pkg_dir = path.abspath(__file__).split('/docs')[0]
 setup = path.join(pkg_dir, 'setup.py')
