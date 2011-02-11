@@ -46,11 +46,9 @@ class ModelView(object):
     def __init__(self, context, request):
         self.context = context
         self.request = request
-        self.settings = request.registry.settings
-        self.model = self.settings['fa.models']
-        self.forms = self.settings.get('fa.forms', None)
-        self.FieldSet = self.settings.get('fa.fieldset', FieldSet)
-        self.Grid = self.settings.get('fa.grid', Grid)
+
+        self.FieldSet = FieldSet
+        self.Grid = Grid
 
     @property
     def model_name(self):
@@ -61,22 +59,22 @@ class ModelView(object):
             return None
 
     def route_url(self, *args):
-        return self.request.route_url('fa_admin', traverse='/'.join([str(a) for a in args]))
+        return self.request.route_url(self.request.route_name, traverse='/'.join([str(a) for a in args]))
 
     def Session(self):
         """return a Session object. You **must** override this."""
-        return self.settings['fa.session_factory']()
+        return self.request.session_factory()
 
     def models(self, **kwargs):
         """Models index page"""
         request = self.request
         models = {}
-        if isinstance(self.model, list):
-            for model in self.model:
+        if isinstance(request.model, list):
+            for model in request.model:
                 key = model.__name__
                 models[key] = self.route_url(key, request.format)
         else:
-            for key, obj in self.model.__dict__.iteritems():
+            for key, obj in request.model.__dict__.iteritems():
                 if not key.startswith('_'):
                     if Document is not None:
                         try:
@@ -95,32 +93,33 @@ class ModelView(object):
         return self.render(models=models)
 
     def get_model(self):
-        if isinstance(self.model, list):
-            for model in self.model:
+        request = self.request
+        if isinstance(request.model, list):
+            for model in request.model:
                 if model.__name__ == self.model_name:
                     return model
-        elif hasattr(self.model, self.model_name):
-            return getattr(self.model, self.model_name)
+        elif hasattr(request.model, self.model_name):
+            return getattr(request.model, self.model_name)
         raise NotFound()
 
     def get_fieldset(self, id):
-        if self.forms and hasattr(self.forms, self.model_name):
-            fs = getattr(self.forms, self.model_name)
+        if request.forms and hasattr(request.forms, self.model_name):
+            fs = getattr(request.forms, self.model_name)
             fs.engine = fs.engine or self.engine
             return id and fs.bind(self.get(id)) or fs
         raise KeyError(self.model_name)
 
     def get_add_fieldset(self):
-        if self.forms and hasattr(self.forms, '%sAdd' % self.model_name):
-            fs = getattr(self.forms, '%sAdd' % self.model_name)
+        if request.forms and hasattr(request.forms, '%sAdd' % self.model_name):
+            fs = getattr(request.forms, '%sAdd' % self.model_name)
             fs.engine = fs.engine or self.engine
             return fs
         return self.get_fieldset(id=None)
 
     def get_grid(self):
         model_name = self.model_name
-        if self.forms and hasattr(self.forms, '%sGrid' % model_name):
-            g = getattr(self.forms, '%sGrid' % model_name)
+        if request.forms and hasattr(request.forms, '%sGrid' % model_name):
+            g = getattr(request.forms, '%sGrid' % model_name)
             g.engine = g.engine or self.engine
             g.readonly = True
             self.update_grid(g)
@@ -191,7 +190,7 @@ class ModelView(object):
             data = dict(fields=fields)
             pk = _pk(fs.model)
             if pk:
-                data['item_url'] = request.route_url('fa_admin', traverse='%s/json/%s' % (self.model_name, pk))
+                data['item_url'] = self.route_url(self.model_name, 'json', pk)
         else:
             data = {}
         data.update(kwargs)
@@ -265,8 +264,9 @@ class ModelView(object):
             fs.engine = fs.engine or self.engine
             return fs
         """
-        if self.forms and hasattr(self.forms, self.model_name):
-            fs = getattr(self.forms, self.model_name)
+        request = self.request
+        if request.forms and hasattr(request.forms, self.model_name):
+            fs = getattr(request.forms, self.model_name)
             fs.engine = fs.engine or self.engine
             return id and fs.bind(self.get(id)) or fs
         fs = self.FieldSet(self.get(id))
@@ -300,9 +300,10 @@ class ModelView(object):
             self.update_grid(grid)
             return grid
         """
+        request = self.request
         model_name = self.model_name
-        if self.forms and hasattr(self.forms, '%sGrid' % model_name):
-            g = getattr(self.forms, '%sGrid' % model_name)
+        if request.forms and hasattr(request.forms, '%sGrid' % model_name):
+            g = getattr(request.forms, '%sGrid' % model_name)
             g.engine = g.engine or self.engine
             g.readonly = True
             self.update_grid(g)

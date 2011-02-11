@@ -1,12 +1,25 @@
 # -*- coding: utf-8 -*-
 
-class AdminView(object):
-    def __init__(self, request):
+class Base(object):
+
+    def __init__(self, request, name):
+        self.__name__ = name
+        self.__parent__ = None
         self.request = request
+        if hasattr(self, '__fa_route_name__'):
+            request.forms = self.__forms__
+            request.model = self.__models__
+            request.route_name = self.__fa_route_name__
+            request.session_factory = self.__session_factory__
+
+class Models(Base):
+
+    def __init__(self, request):
+        Base.__init__(self, request, None)
         request.model_name = None
         request.model_id = None
         request.format = 'html'
-        self.__parent__ = self.__name__ = None
+
     def __getitem__(self, item):
         if item in ('json', 'xhr'):
             self.request.format = item
@@ -15,25 +28,25 @@ class AdminView(object):
         model.__parent__ = self
         return model
 
-class ModelListing(object):
+class ModelListing(Base):
+
     def __init__(self, request, name):
-        self.request = request
+        Base.__init__(self, request, name)
         request.model_name = name
-        self.__name__ = name
-        self.__parent__ = None
+
     def __getitem__(self, item):
         if item in ('json', 'xhr'):
             self.request.format = item
             return self
         if item in ('new',):
             raise KeyError()
-        model = ModelItem(self.request, item)
+        model = Model(self.request, item)
         model.__parent__ = self
         return model
 
-class ModelItem(object):
+class Model(Base):
+
     def __init__(self, request, name):
+        Base.__init__(self, request, name)
         request.model_id = name
-        self.__name__ = name
-        self.__parent__ = None
 

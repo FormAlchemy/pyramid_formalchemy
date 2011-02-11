@@ -3,9 +3,6 @@ from sqlalchemy import engine_from_config
 
 from pyramidapp.models import initialize_sql
 
-# import
-import pyramid_formalchemy
-
 def main(global_config, **settings):
     """ This function returns a Pyramid WSGI application.
     """
@@ -17,8 +14,8 @@ def main(global_config, **settings):
                      view_renderer='templates/mytemplate.pt')
 
     # pyramid_formalchemy's configuration
-    pyramid_formalchemy.include(config)
-    pyramid_formalchemy.configure(config, package='pyramidapp')
+    config.include('pyramid_formalchemy')
+    config.formalchemy_admin('admin', package='pyramidapp')
 
     return config.make_wsgi_app()
 
