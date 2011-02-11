@@ -5,11 +5,6 @@ def includeme(config):
     config.add_static_view('fa_admin', 'pyramid_formalchemy:static')
     config.add_directive('formalchemy_admin', 'pyramid_formalchemy.formalchemy_admin')
 
-def include_jquery(config):
-    """include formalchemy and fa.jquery's zcml """
-    config.add_static_view('fa_admin', 'fa.jquery:static')
-
-
 def formalchemy_admin(config, route_name,
                       factory='pyramid_formalchemy.resources.Models',
                       view='pyramid_formalchemy.views.ModelView',
