@@ -1,0 +1,8 @@
+include CHANGES.txt
+recursive-include pyramid_formalchemy *.pt.py
+recursive-include pyramid_formalchemy *.pt
+recursive-include pyramid_formalchemy *.css
+recursive-include pyramid_formalchemy *.js
+recursive-include pyramid_formalchemy *.gif
+recursive-include pyramid_formalchemy *.png
+recursive-include pyramid_formalchemy *.jpg

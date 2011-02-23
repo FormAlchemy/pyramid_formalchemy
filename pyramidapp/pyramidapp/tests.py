@@ -29,8 +29,10 @@ class TestController(unittest.TestCase):
     def tearDown(self):
         self.config.end()
 
-
     def test_index(self):
+        resp = self.app.get('/')
+
+    def test_crud(self):
         # index
         resp = self.app.get('/admin/')
         resp.mustcontain('/admin/Foo')

@@ -1,0 +1,17 @@
+<tbody>
+  <tal:field tal:repeat="field fieldset.render_fields.itervalues()">
+    <tr tal:condition="field.requires_label">
+      <td class="field_readonly">
+        <label tal:content="[field.label_text, fieldset.prettify(field.key)][int(field.label_text is None)]"
+               />
+      </td>
+      <td tal:content="structure field.render_readonly()" />
+    </tr>
+  </tal:field>
+  <tr style="display:none"><td>&nbsp;</td><td>
+    <tal:field tal:repeat="field fieldset.render_fields.itervalues()">
+      <div tal:condition="not field.requires_label" tal:replace="structure field.render_readonly()" />
+    </tal:field>
+  </td>
+  </tr>
+</tbody>

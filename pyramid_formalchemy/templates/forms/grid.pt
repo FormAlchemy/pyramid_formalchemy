@@ -1,0 +1,21 @@
+<table class="layout-grid">
+<thead>
+  <tr class="ui-widget-header">
+    <th tal:repeat="field collection.render_fields.itervalues()"
+        tal:content="field.label_text or collection.prettify(field.key)"></th>
+  </tr>
+</thead>
+<tbody>
+  <tal:row tal:repeat="row collection.rows">
+    <tr tal:define="dummy collection._set_active(row);
+                    row_errors collection.get_errors(row);"
+        tal:attributes="class string:ui-widget-${repeat.row.even and 'even' or 'odd'}">
+      <td tal:repeat="field collection.render_fields.itervalues()">
+        <div tal:replace="structure field.render()" />
+        <div tal:repeat="error row_errors.get(field, [])" class="grid_error">${error}</div>
+      </td>
+    </tr>
+  </tal:row>
+</tbody>
+</table>
+

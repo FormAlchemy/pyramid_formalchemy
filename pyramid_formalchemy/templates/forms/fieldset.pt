@@ -1,0 +1,31 @@
+<tal:define tal:define="focus_rendered False">
+<div tal:condition="fieldset.errors.get(None, False)">
+  <div tal:repeat="error fieldset.error.get(None)" tal:content="error" />
+</div>
+
+<tal:field tal:repeat="field fieldset.render_fields.itervalues()">
+  <div class="fa_field ui-widget">
+    <div class="label" tal:condition="field.requires_label">
+      <div tal:condition="isinstance(field.type, fatypes.Boolean)"
+           tal:content="structure field.render()" />
+      <label tal:attributes="class field.is_required() and 'field_req' or 'field_opt';
+                             for field.renderer.name">
+        <span tal:replace="[field.label_text, fieldset.prettify(field.key)][int(field.label_text is None)]" />
+      </label>
+    </div>
+    <div class="fa_instructions ui-corner-all"
+         tal:content="field.metadata['instructions']"
+         tal:condition="'instructions' in field.metadata">
+    </div>
+    <div class="ui-state-error ui-corner-all" tal:condition="field.errors">
+      <div tal:repeat="error field.errors" tal:content="error" />
+    </div>
+    <div class="field_input" tal:condition="not isinstance(field.type, fatypes.Boolean)"
+         tal:content="structure field.render()" />
+  </div>
+  <script tal:condition="not field.is_readonly() and (fieldset.focus == field or fieldset.focus is True) and not focus_rendered">
+    <tal:define tal:define="global focus_rendered True" />
+    jQuery(document).ready(function(){jQuery("[name='${field.renderer.name}']").focus();});
+  </script>
+</tal:field>
+</tal:define>

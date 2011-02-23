@@ -14,6 +14,7 @@ from pyramid.renderers import get_renderer
 from pyramid.response import Response
 from pyramid import httpexceptions as exc
 from pyramid.exceptions import NotFound
+from pyramid_formalchemy.utils import TemplateEngine
 
 try:
     from formalchemy.ext.couchdb import Document
@@ -39,7 +40,7 @@ class Session(object):
 class ModelView(object):
     """A RESTful view bound to a model"""
 
-    engine = prefix_name = None
+    engine = TemplateEngine()
     pager_args = dict(link_attr={'class': 'ui-pager-link ui-state-default ui-corner-all'},
                       curpage_attr={'class': 'ui-pager-curpage ui-state-highlight ui-corner-all'})
 

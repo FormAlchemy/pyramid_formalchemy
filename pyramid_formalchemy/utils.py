@@ -16,7 +16,7 @@ class TemplateEngine(BaseTemplateEngine):
             name = name.strip('/')
             if not name.endswith('.pt'):
                 name = '%s.pt' % name
-            renderer = 'fa.jquery:templates/forms/%s' % name
+            renderer = 'pyramid_formalchemy:templates/forms/%s' % name
         kwargs.update(dict(
             fatypes=fatypes,
         ))
