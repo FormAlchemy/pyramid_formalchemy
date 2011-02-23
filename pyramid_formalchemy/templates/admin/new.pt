@@ -5,8 +5,16 @@
             tal:attributes="action request.route_url(request.route_name, traverse=request.model_name)"
         >
         <div tal:content="structure fs.render()" />
-        <div metal:use-macro="main.macros['buttons']">
-        </div>
+        <p class="fa_field">
+          <a class="ui-widget-header ui-widget-link ui-widget-button ui-corner-all" href="#">
+            <input type="submit" value="${F_('Save')}" />
+          </a>
+          <a class="ui-widget-header ui-widget-link ui-corner-all"
+             tal:attributes="href request.route_url(request.route_name, traverse=request.model_name)">
+            <span class="ui-icon ui-icon-circle-arrow-w"></span>
+            ${F_('Cancel')}
+          </a>
+        </p>
       </form>
     </div>
   </body>

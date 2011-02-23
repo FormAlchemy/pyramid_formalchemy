@@ -58,9 +58,6 @@ class ModelView(object):
         except AttributeError:
             return None
 
-    def route_url(self, *args):
-        return self.request.route_url(self.request.route_name, traverse='/'.join([str(a) for a in args]))
-
     def Session(self):
         """return a Session object. You **must** override this."""
         return self.request.session_factory()
@@ -72,14 +69,14 @@ class ModelView(object):
         if isinstance(request.model, list):
             for model in request.model:
                 key = model.__name__
-                models[key] = self.route_url(key, request.format)
+                models[key] = request.fa_url(key, request.format)
         else:
             for key, obj in request.model.__dict__.iteritems():
                 if not key.startswith('_'):
                     if Document is not None:
                         try:
                             if issubclass(obj, Document):
-                                models[key] = self.route_url(key, request.format)
+                                models[key] = request.fa_url(key, request.format)
                                 continue
                         except:
                             pass
@@ -89,7 +86,7 @@ class ModelView(object):
                         continue
                     if not isinstance(obj, type):
                         continue
-                    models[key] = self.route_url(key, request.format)
+                    models[key] = request.fa_url(key, request.format)
         return self.render(models=models)
 
     def get_model(self):
@@ -150,13 +147,13 @@ class ModelView(object):
         request = self.request
         model_name = request.model_name
         id = request.model_id
-        items.append((self.route_url(), 'root'))
+        items.append((request.fa_url(), 'root'))
         if self.model_name:
-            items.append((self.route_url(model_name), model_name))
+            items.append((request.fa_url(model_name), model_name))
         if id and hasattr(fs.model, '__unicode__'):
-            items.append((self.route_url(model_name, id), u'%s' % fs.model))
+            items.append((request.fa_url(model_name, id), u'%s' % fs.model))
         elif id:
-            items.append((self.route_url(model_name, id), id))
+            items.append((request.fa_url(model_name, id), id))
         return items
 
     def render(self, **kwargs):
@@ -190,7 +187,7 @@ class ModelView(object):
             data = dict(fields=fields)
             pk = _pk(fs.model)
             if pk:
-                data['item_url'] = self.route_url(self.model_name, 'json', pk)
+                data['item_url'] = request.fa_url(self.model_name, 'json', pk)
         else:
             data = {}
         data.update(kwargs)
@@ -324,14 +321,14 @@ class ModelView(object):
                 <form action="%(url)s" method="GET" class="ui-grid-icon ui-widget-header ui-corner-all">
                 <input type="submit" class="ui-grid-icon ui-icon ui-icon-pencil" title="%(label)s" value="%(label)s" />
                 </form>
-                ''' % dict(url=self.route_url(self.model_name, _pk(item), 'edit'),
+                ''' % dict(url=self.request.fa_url(self.model_name, _pk(item), 'edit'),
                             label=get_translator().gettext('edit'))
             def delete_link():
                 return lambda item: '''
                 <form action="%(url)s" method="POST" class="ui-grid-icon ui-state-error ui-corner-all">
                 <input type="submit" class="ui-icon ui-icon-circle-close" title="%(label)s" value="%(label)s" />
                 </form>
-                ''' % dict(url=self.route_url(self.model_name, _pk(item), 'delete'),
+                ''' % dict(url=self.request.fa_url(self.model_name, _pk(item), 'delete'),
                            label=get_translator().gettext('delete'))
             grid.append(Field('edit', fatypes.String, edit_link()))
             grid.append(Field('delete', fatypes.String, delete_link()))
@@ -350,7 +347,7 @@ class ModelView(object):
                 pk = _pk(item)
                 fs._set_active(item)
                 value = dict(id=pk,
-                             item_url=self.route_url(request.model_name, pk))
+                             item_url=request.fa_url(request.model_name, pk))
                 if 'jqgrid' in request.GET:
                     fields = [_stringify(field.render_readonly()) for field in fs.render_fields.values()]
                     value['cell'] = [pk] + fields
@@ -392,7 +389,7 @@ class ModelView(object):
                     response.content_type = 'text/plain'
                     return ''
                 return exc.HTTPFound(
-                    location=self.route_url(request.model_name))
+                    location=request.fa_url(request.model_name))
             else:
                 fs.rebind(fs.model, data=None)
                 return self.render(fs=fs)
@@ -411,7 +408,7 @@ class ModelView(object):
                 response = Response()
                 response.content_type = 'text/plain'
                 return response
-            return exc.HTTPFound(location=self.route_url(request.model_name))
+            return exc.HTTPFound(location=request.fa_url(request.model_name))
         return self.render(id=id)
 
     def show(self):
@@ -451,7 +448,7 @@ class ModelView(object):
                     response.content_type = 'text/plain'
                     return ''
                 return exc.HTTPFound(
-                        location=self.route_url(request.model_name, _pk(fs.model)))
+                        location=request.fa_url(request.model_name, _pk(fs.model)))
             else:
                 return self.render(fs=fs, status=0)
         if request.format == 'html':
