@@ -41,6 +41,7 @@ setup(name='pyramidapp',
       entry_points = """\
       [paste.app_factory]
       main = pyramidapp:main
+      jquery = pyramidapp.jquery:main
       """,
       paster_plugins=['pyramid'],
       )

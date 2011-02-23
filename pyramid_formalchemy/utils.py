@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from formalchemy.templates import TemplateEngine as BaseTemplateEngine
+from formalchemy import config
 from formalchemy import fatypes
 from webhelpers.html import literal
 from pyramid.renderers import render
@@ -22,4 +23,4 @@ class TemplateEngine(BaseTemplateEngine):
         ))
         return literal(render(renderer, kwargs))
 
-
+config.engine = TemplateEngine()

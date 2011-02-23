@@ -3,10 +3,10 @@ def bind():
     from cPickle import loads as _loads
     _lookup_attr = _loads('cchameleon.core.codegen\nlookup_attr\np1\n.')
     _init_scope = _loads('cchameleon.core.utils\necontext\np1\n.')
+    _attrs_4360545744 = _loads('(dp1\n.')
     _init_stream = _loads('cchameleon.core.generation\ninitialize_stream\np1\n.')
-    _attrs_4357103760 = _loads('(dp1\n.')
     _init_default = _loads('cchameleon.core.generation\ninitialize_default\np1\n.')
-    _attrs_4357103888 = _loads('(dp1\n.')
+    _attrs_4360546576 = _loads('(dp1\n.')
     _init_tal = _loads('cchameleon.core.generation\ninitialize_tal\np1\n.')
     def render(econtext, rcontext=None):
         macros = econtext.get('macros')
@@ -28,13 +28,13 @@ def bind():
         def _callback_main(econtext, _repeat, _out=_out, _write=_write, _domain=_domain, **_ignored):
             if _repeat:
                 repeat.update(_repeat)
-            attrs = _attrs_4357103760
+            attrs = _attrs_4360545744
             u"''"
             _write(u'<div>\n      ')
             _default.value = default = ''
             u'fs.render()'
             _content = _lookup_attr(econtext['fs'], 'render')()
-            attrs = _attrs_4357103888
+            attrs = _attrs_4360546576
             u'_content'
             _write(u'<div>')
             _tmp1 = _content
@@ -67,5 +67,5 @@ def bind():
         return _out.getvalue()
     return render
 
-__filename__ = u'/Users/gawel/py/formalchemy_project/pyramid_formalchemy/pyramid_formalchemy/templates/admin/show.pt'
+__filename__ = '/Users/gawel/py/formalchemy_project/pyramid_formalchemy/pyramid_formalchemy/templates/admin/show.pt'
 registry[(None, True, '1488bdb950901f8f258549439ef6661a49aae984')] = bind()

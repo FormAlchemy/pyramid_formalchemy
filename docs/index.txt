@@ -32,7 +32,7 @@ This will render the **basic** formalchemy interface.
 
 It's better to enable the jquery stuff like this:
 
-.. literalinclude:: ../../formalchemy_project/__init__.py
+.. literalinclude:: ../pyramidapp/pyramidapp/jquery.py
 
 
 That's it. Now launch your app, browse ``/admin/`` and enjoy it !

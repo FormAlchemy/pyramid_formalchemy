@@ -17,10 +17,12 @@ def _initTestingDB():
    session = initialize_sql(create_engine('sqlite://'))
    return session
 
-class TestController(unittest.TestCase):
+class TestUI(unittest.TestCase):
+
+    config = os.path.join(dirname, 'test.ini')
 
     def setUp(self):
-        app = loadapp('config:%s' % os.path.join(dirname, 'development.ini'))
+        app = loadapp('config:%s' % self.config)
         self.app = TestApp(app)
         self.config = Configurator(autocommit=True)
         self.config.begin()
@@ -52,10 +54,10 @@ class TestController(unittest.TestCase):
         # model index
         resp = resp.follow()
         resp.mustcontain('<td>value</td>')
-
-        # edit page
         form = resp.forms[0]
         resp = form.submit()
+
+        # edit page
         form = resp.forms[0]
         form['Foo-1-bar'] = 'new value'
         #form['_method'] = 'PUT'
@@ -102,4 +104,43 @@ class TestController(unittest.TestCase):
         response = self.app.delete(str(data['item_url']))
 
 
+
+class TestJQuery(TestUI):
+
+    config = os.path.join(dirname, 'test2.ini')
+
+    def test_crud(self):
+        # index
+        resp = self.app.get('/admin/')
+        resp.mustcontain('/admin/Foo')
+        resp = resp.click('Foo')
+
+        ## Simple model
+
+        # add page
+        resp.mustcontain('/admin/Foo/new')
+        resp = resp.click('New Foo')
+        resp.mustcontain('/admin/Foo"')
+        form = resp.forms[0]
+        form['Foo--bar'] = 'value'
+        resp = form.submit()
+        assert resp.headers['location'] == 'http://localhost/admin/Foo', resp
+
+        # model index
+        resp = resp.follow()
+
+        # edit page
+        resp = self.app.get('/admin/Foo/1/edit')
+        form = resp.forms[0]
+        form['Foo-1-bar'] = 'new value'
+        #form['_method'] = 'PUT'
+        resp = form.submit()
+        resp = resp.follow()
+
+        # model index
+        resp.mustcontain('<td>new value</td>')
+
+        # delete
+        resp = self.app.get('/admin/Foo')
+        resp.mustcontain('jQuery')
 

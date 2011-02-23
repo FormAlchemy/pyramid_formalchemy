@@ -1,24 +1,24 @@
 registry = dict(version=0)
 def bind():
     from cPickle import loads as _loads
+    _attrs_4356111248 = _loads('(dp1\nVrel\np2\nVstylesheet\np3\ns.')
     _lookup_attr = _loads('cchameleon.core.codegen\nlookup_attr\np1\n.')
-    _attrs_4349228944 = _loads('(dp1\n.')
     _init_scope = _loads('cchameleon.core.utils\necontext\np1\n.')
     _re_amp = _loads("cre\n_compile\np1\n(S'&(?!([A-Za-z]+|#[0-9]+);)'\np2\nI0\ntRp3\n.")
-    _attrs_4349229648 = _loads('(dp1\n.')
-    _attrs_4349229712 = _loads('(dp1\nVclass\np2\nVbreadcrumb\np3\ns.')
-    _attrs_4349229392 = _loads('(dp1\n.')
-    _attrs_4349229776 = _loads('(dp1\n.')
-    _attrs_4349230160 = _loads('(dp1\n.')
-    _attrs_4349229520 = _loads('(dp1\nVrel\np2\nVstylesheet\np3\ns.')
+    _attrs_4356112272 = _loads('(dp1\n.')
+    _attrs_4356111632 = _loads('(dp1\nVid\np2\nVheader\np3\nsVclass\np4\nVui-widget-header ui-corner-all\np5\ns.')
+    _attrs_4356108816 = _loads('(dp1\n.')
+    _attrs_4356111440 = _loads('(dp1\n.')
     _init_stream = _loads('cchameleon.core.generation\ninitialize_stream\np1\n.')
-    _attrs_4349229072 = _loads('(dp1\n.')
-    _attrs_4349229584 = _loads('(dp1\nVid\np2\nVheader\np3\nsVclass\np4\nVui-widget-header ui-corner-all\np5\ns.')
+    _attrs_4356108496 = _loads('(dp1\n.')
+    _attrs_4356112144 = _loads('(dp1\nVclass\np2\nVbreadcrumb\np3\ns.')
+    _attrs_4356111184 = _loads('(dp1\n.')
+    _attrs_4356111888 = _loads('(dp1\nVid\np2\nVcontent\np3\nsVclass\np4\nVui-admin ui-widget\np5\ns.')
     _init_default = _loads('cchameleon.core.generation\ninitialize_default\np1\n.')
-    _attrs_4349229968 = _loads('(dp1\nVid\np2\nVcontent\np3\nsVclass\np4\nVui-admin ui-widget\np5\ns.')
-    _attrs_4349229264 = _loads('(dp1\n.')
+    _attrs_4356111120 = _loads('(dp1\n.')
+    _attrs_4356112080 = _loads('(dp1\n.')
     _init_tal = _loads('cchameleon.core.generation\ninitialize_tal\np1\n.')
-    _attrs_4349230480 = _loads('(dp1\n.')
+    _attrs_4356111056 = _loads('(dp1\n.')
     def render(econtext, rcontext=None):
         macros = econtext.get('macros')
         _translate = econtext.get('_translate')
@@ -34,15 +34,15 @@ def bind():
         default = None
         u'None'
         _domain = None
-        attrs = _attrs_4349228944
+        attrs = _attrs_4356111440
         _write(u'<html>\n    ')
-        attrs = _attrs_4349229072
+        attrs = _attrs_4356111056
         u"''"
         _write(u'<head>\n      ')
         _default.value = default = ''
         u"request.model_name or 'root'"
         _content = (_lookup_attr(econtext['request'], 'model_name') or 'root')
-        attrs = _attrs_4349229392
+        attrs = _attrs_4356111184
         u'_content'
         _write(u'<title>')
         _tmp1 = _content
@@ -70,7 +70,7 @@ def bind():
                 _tmp = _tmp.replace('>', '&gt;')
             _write(_tmp)
         _write(u'</title>\n      ')
-        attrs = _attrs_4349229520
+        attrs = _attrs_4356111248
         u"request.static_url('pyramid_formalchemy:static/admin.css')"
         _write(u'<link rel="stylesheet"')
         _tmp1 = _lookup_attr(econtext['request'], 'static_url')('pyramid_formalchemy:static/admin.css')
@@ -95,13 +95,13 @@ def bind():
                 _tmp1 = _tmp1.replace('"', '&quot;')
             _write(((' href="' + _tmp1) + '"'))
         _write(u'></link>\n    </head>\n    ')
-        attrs = _attrs_4349229264
+        attrs = _attrs_4356111120
         _write(u'<body>\n      ')
-        attrs = _attrs_4349229968
+        attrs = _attrs_4356111888
         _write(u'<div id="content" class="ui-admin ui-widget">\n        ')
-        attrs = _attrs_4349229584
+        attrs = _attrs_4356111632
         _write(u'<h1 id="header" class="ui-widget-header ui-corner-all">\n          ')
-        attrs = _attrs_4349229712
+        attrs = _attrs_4356112144
         u'breadcrumb'
         _write(u'<div class="breadcrumb">\n            ')
         _tmp1 = econtext['breadcrumb']
@@ -114,7 +114,7 @@ def bind():
             _default.value = default = ''
             u'item[1]'
             _content = item[1]
-            attrs = _attrs_4349230480
+            attrs = _attrs_4356108496
             u'item[0]'
             _write(u'<a')
             _tmp3 = item[0]
@@ -169,7 +169,7 @@ def bind():
             _tmp3 = not _lookup_attr(repeat.item, 'end')
             if _tmp3:
                 pass
-                attrs = _attrs_4349230160
+                attrs = _attrs_4356108816
                 _write(u'<span>/</span>')
             _write(u'\n            ')
             if (_tmp2 == 0):
@@ -180,7 +180,7 @@ def bind():
         _default.value = default = ''
         u"request.model_name or 'root'"
         _content = (_lookup_attr(econtext['request'], 'model_name') or 'root')
-        attrs = _attrs_4349229776
+        attrs = _attrs_4356112272
         u'_content'
         _write(u'<div>')
         _tmp1 = _content
@@ -240,7 +240,7 @@ def bind():
                     _write(_tmp)
         else:
             pass
-            attrs = _attrs_4349229648
+            attrs = _attrs_4356112080
             _write(u'<div>\n        </div>')
         _write(u'\n      </div>\n    </body>\n</html>')
         return
@@ -253,15 +253,15 @@ def bind():
     _lookup_attr = _loads('cchameleon.core.codegen\nlookup_attr\np1\n.')
     _init_scope = _loads('cchameleon.core.utils\necontext\np1\n.')
     _re_amp = _loads("cre\n_compile\np1\n(S'&(?!([A-Za-z]+|#[0-9]+);)'\np2\nI0\ntRp3\n.")
-    _attrs_4351942800 = _loads('(dp1\n.')
+    _attrs_4356061584 = _loads("(dp1\nVtype\np2\nVsubmit\np3\nsVvalue\np4\nV${F_('Save')}\np5\ns.")
+    _attrs_4356061712 = _loads('(dp1\nVclass\np2\nVui-icon ui-icon-circle-arrow-w\np3\ns.')
+    _attrs_4356061456 = _loads('(dp1\nVhref\np2\nV#\nsVclass\np3\nVui-widget-header ui-widget-link ui-widget-button ui-corner-all\np4\ns.')
+    _attrs_4356059984 = _loads('(dp1\n.')
     _init_stream = _loads('cchameleon.core.generation\ninitialize_stream\np1\n.')
-    _attrs_4351944656 = _loads('(dp1\nVhref\np2\nV#\nsVclass\np3\nVui-widget-header ui-widget-link ui-widget-button ui-corner-all\np4\ns.')
+    _attrs_4356060496 = _loads('(dp1\nVclass\np2\nVfa_field\np3\ns.')
     _init_default = _loads('cchameleon.core.generation\ninitialize_default\np1\n.')
-    _attrs_4351944784 = _loads("(dp1\nVtype\np2\nVsubmit\np3\nsVvalue\np4\nV${F_('Save')}\np5\ns.")
-    _attrs_4351945104 = _loads('(dp1\nVclass\np2\nVui-icon ui-icon-circle-arrow-w\np3\ns.')
-    _attrs_4351943504 = _loads('(dp1\nVclass\np2\nVfa_field\np3\ns.')
     _init_tal = _loads('cchameleon.core.generation\ninitialize_tal\np1\n.')
-    _attrs_4351944848 = _loads('(dp1\nVclass\np2\nVui-widget-header ui-widget-link ui-corner-all\np3\ns.')
+    _attrs_4356062352 = _loads('(dp1\nVclass\np2\nVui-widget-header ui-widget-link ui-corner-all\np3\ns.')
     def render(econtext, rcontext=None):
         macros = econtext.get('macros')
         _translate = econtext.get('_translate')
@@ -277,13 +277,13 @@ def bind():
         default = None
         u'None'
         _domain = None
-        attrs = _attrs_4351942800
+        attrs = _attrs_4356059984
         _write(u'<div>\n  ')
-        attrs = _attrs_4351943504
+        attrs = _attrs_4356060496
         _write(u'<p class="fa_field">\n    ')
-        attrs = _attrs_4351944656
+        attrs = _attrs_4356061456
         _write(u'<a class="ui-widget-header ui-widget-link ui-widget-button ui-corner-all" href="#">\n      ')
-        attrs = _attrs_4351944784
+        attrs = _attrs_4356061584
         'join(value("F_(\'Save\')"),)'
         _write(u'<input type="submit"')
         _tmp1 = econtext['F_']('Save')
@@ -308,7 +308,7 @@ def bind():
                 _tmp1 = _tmp1.replace('"', '&quot;')
             _write(((' value="' + _tmp1) + '"'))
         _write(u' />\n    </a>\n    ')
-        attrs = _attrs_4351944848
+        attrs = _attrs_4356062352
         u'request.route_url(request.route_name, traverse=request.model_name)'
         _write(u'<a class="ui-widget-header ui-widget-link ui-corner-all"')
         _tmp1 = _lookup_attr(econtext['request'], 'route_url')(_lookup_attr(econtext['request'], 'route_name'), traverse=_lookup_attr(econtext['request'], 'model_name'))
@@ -333,7 +333,7 @@ def bind():
                 _tmp1 = _tmp1.replace('"', '&quot;')
             _write(((' href="' + _tmp1) + '"'))
         _write(u'>\n      ')
-        attrs = _attrs_4351945104
+        attrs = _attrs_4356061712
         u"F_('Cancel')"
         _write(u'<span class="ui-icon ui-icon-circle-arrow-w"></span>\n      ')
         _tmp1 = econtext['F_']('Cancel')

@@ -1,23 +1,23 @@
 registry = dict(version=0)
 def bind():
     from cPickle import loads as _loads
-    _attrs_4301975440 = _loads('(dp1\nVclass\np2\nVfield_input\np3\ns.')
     _lookup_attr = _loads('cchameleon.core.codegen\nlookup_attr\np1\n.')
     _init_scope = _loads('cchameleon.core.utils\necontext\np1\n.')
     _re_amp = _loads("cre\n_compile\np1\n(S'&(?!([A-Za-z]+|#[0-9]+);)'\np2\nI0\ntRp3\n.")
-    _attrs_4301975312 = _loads('(dp1\nVclass\np2\nVui-state-error ui-corner-all\np3\ns.')
-    _attrs_4301975504 = _loads('(dp1\n.')
-    _attrs_4301974800 = _loads('(dp1\n.')
-    _attrs_4301975120 = _loads('(dp1\nVclass\np2\nVfa_instructions ui-corner-all\np3\ns.')
-    _attrs_4301975248 = _loads('(dp1\n.')
+    _attrs_4356305168 = _loads('(dp1\nVclass\np2\nVfield_input\np3\ns.')
+    _attrs_4356308368 = _loads('(dp1\nVclass\np2\nVfa_instructions ui-corner-all\np3\ns.')
+    _attrs_4356306896 = _loads('(dp1\n.')
+    _attrs_4356307792 = _loads('(dp1\nVclass\np2\nVlabel\np3\ns.')
     _init_stream = _loads('cchameleon.core.generation\ninitialize_stream\np1\n.')
-    _attrs_4301975056 = _loads('(dp1\nVclass\np2\nVlabel\np3\ns.')
+    _attrs_4356308560 = _loads('(dp1\n.')
+    _attrs_4356307152 = _loads('(dp1\n.')
+    _attrs_4356305488 = _loads('(dp1\n.')
     _init_default = _loads('cchameleon.core.generation\ninitialize_default\np1\n.')
-    _attrs_4301974992 = _loads('(dp1\n.')
-    _attrs_4301974544 = _loads('(dp1\n.')
-    _attrs_4301974928 = _loads('(dp1\nVclass\np2\nVfa_field ui-widget\np3\ns.')
-    _attrs_4301975184 = _loads('(dp1\n.')
+    _attrs_4356307536 = _loads('(dp1\nVclass\np2\nVfa_field ui-widget\np3\ns.')
+    _attrs_4356308240 = _loads('(dp1\n.')
+    _attrs_4356305040 = _loads('(dp1\n.')
     _init_tal = _loads('cchameleon.core.generation\ninitialize_tal\np1\n.')
+    _attrs_4356308944 = _loads('(dp1\nVclass\np2\nVui-state-error ui-corner-all\np3\ns.')
     def render(econtext, rcontext=None):
         macros = econtext.get('macros')
         _translate = econtext.get('_translate')
@@ -40,7 +40,7 @@ def bind():
         _tmp1 = _lookup_attr(_lookup_attr(econtext['fieldset'], 'errors'), 'get')(None, False)
         if _tmp1:
             pass
-            attrs = _attrs_4301974544
+            attrs = _attrs_4356306896
             u"''"
             _write(u'<div>\n  ')
             _default.value = default = ''
@@ -52,7 +52,7 @@ def bind():
                 _tmp2 = (_tmp2 - 1)
                 u'error'
                 _content = error
-                attrs = _attrs_4301974800
+                attrs = _attrs_4356307152
                 u'_content'
                 _write(u'<div>')
                 _tmp3 = _content
@@ -92,13 +92,13 @@ def bind():
         for field in _tmp1:
             _tmp2 = (_tmp2 - 1)
             _write(u'\n  ')
-            attrs = _attrs_4301974928
+            attrs = _attrs_4356307536
             u'field.requires_label'
             _write(u'<div class="fa_field ui-widget">\n    ')
             _tmp3 = _lookup_attr(field, 'requires_label')
             if _tmp3:
                 pass
-                attrs = _attrs_4301975056
+                attrs = _attrs_4356307792
                 u"''"
                 _write(u'<div class="label">\n      ')
                 _default.value = default = ''
@@ -108,7 +108,7 @@ def bind():
                     pass
                     u'field.render()'
                     _content = _lookup_attr(field, 'render')()
-                    attrs = _attrs_4301975184
+                    attrs = _attrs_4356308560
                     u'_content'
                     _write(u'<div>')
                     _tmp3 = _content
@@ -128,7 +128,7 @@ def bind():
                         _write(_tmp)
                     _write(u'</div>')
                 _write(u'\n      ')
-                attrs = _attrs_4301975248
+                attrs = _attrs_4356305040
                 u"field.is_required() and 'field_req' or 'field_opt'"
                 _write(u'<label')
                 _tmp3 = ((_lookup_attr(field, 'is_required')() and 'field_req') or 'field_opt')
@@ -214,7 +214,7 @@ def bind():
                 pass
                 u"field.metadata['instructions']"
                 _content = _lookup_attr(field, 'metadata')['instructions']
-                attrs = _attrs_4301975120
+                attrs = _attrs_4356308368
                 u'_content'
                 _write(u'<div class="fa_instructions ui-corner-all">')
                 _tmp3 = _content
@@ -247,7 +247,7 @@ def bind():
             _tmp3 = _lookup_attr(field, 'errors')
             if _tmp3:
                 pass
-                attrs = _attrs_4301975312
+                attrs = _attrs_4356308944
                 u"''"
                 _write(u'<div class="ui-state-error ui-corner-all">\n      ')
                 _default.value = default = ''
@@ -259,7 +259,7 @@ def bind():
                     _tmp4 = (_tmp4 - 1)
                     u'error'
                     _content = error
-                    attrs = _attrs_4301975504
+                    attrs = _attrs_4356305488
                     u'_content'
                     _write(u'<div>')
                     _tmp5 = _content
@@ -300,7 +300,7 @@ def bind():
                 pass
                 u'field.render()'
                 _content = _lookup_attr(field, 'render')()
-                attrs = _attrs_4301975440
+                attrs = _attrs_4356305168
                 u'_content'
                 _write(u'<div class="field_input">')
                 _tmp3 = _content
@@ -324,7 +324,7 @@ def bind():
             _tmp3 = (not _lookup_attr(field, 'is_readonly')() and ((_lookup_attr(econtext['fieldset'], 'focus') == field) or (_lookup_attr(econtext['fieldset'], 'focus') is True)) and not focus_rendered)
             if _tmp3:
                 pass
-                attrs = _attrs_4301974992
+                attrs = _attrs_4356308240
                 u'True'
                 _write(u'<script>\n    ')
                 focus_rendered = True
@@ -363,5 +363,5 @@ def bind():
         return _out.getvalue()
     return render
 
-__filename__ = '/Users/gawel/py/formalchemy_project/fa.jquery/fa/jquery/templates/forms/fieldset.pt'
+__filename__ = '/Users/gawel/py/formalchemy_project/pyramid_formalchemy/pyramid_formalchemy/templates/forms/fieldset.pt'
 registry[(None, True, '1488bdb950901f8f258549439ef6661a49aae984')] = bind()
