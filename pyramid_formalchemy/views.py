@@ -1,15 +1,12 @@
 # -*- coding: utf-8 -*-
-import os
 from webhelpers.paginate import Page
-from sqlalchemy.orm import class_mapper, object_session
+from sqlalchemy.orm import class_mapper
 from formalchemy.fields import _pk
 from formalchemy.fields import _stringify
 from formalchemy import Grid, FieldSet
 from formalchemy.i18n import get_translator
 from formalchemy.fields import Field
 from formalchemy import fatypes
-from pyramid.view import view_config
-from pyramid.renderers import render
 from pyramid.renderers import get_renderer
 from pyramid.response import Response
 from pyramid import httpexceptions as exc
@@ -99,30 +96,6 @@ class ModelView(object):
         elif hasattr(request.model, self.model_name):
             return getattr(request.model, self.model_name)
         raise NotFound()
-
-    def get_fieldset(self, id):
-        if request.forms and hasattr(request.forms, self.model_name):
-            fs = getattr(request.forms, self.model_name)
-            fs.engine = fs.engine or self.engine
-            return id and fs.bind(self.get(id)) or fs
-        raise KeyError(self.model_name)
-
-    def get_add_fieldset(self):
-        if request.forms and hasattr(request.forms, '%sAdd' % self.model_name):
-            fs = getattr(request.forms, '%sAdd' % self.model_name)
-            fs.engine = fs.engine or self.engine
-            return fs
-        return self.get_fieldset(id=None)
-
-    def get_grid(self):
-        model_name = self.model_name
-        if request.forms and hasattr(request.forms, '%sGrid' % model_name):
-            g = getattr(request.forms, '%sGrid' % model_name)
-            g.engine = g.engine or self.engine
-            g.readonly = True
-            self.update_grid(g)
-            return g
-        raise KeyError(self.model_name)
 
     def sync(self, fs, id=None):
         """sync a record. If ``id`` is None add a new record else save current one.
