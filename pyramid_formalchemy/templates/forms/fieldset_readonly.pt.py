@@ -1,20 +1,18 @@
 registry = dict(version=0)
 def bind():
     from cPickle import loads as _loads
-    _attrs_4356060816 = _loads('(dp1\n.')
     _lookup_attr = _loads('cchameleon.core.codegen\nlookup_attr\np1\n.')
     _init_scope = _loads('cchameleon.core.utils\necontext\np1\n.')
-    _re_amp = _loads("cre\n_compile\np1\n(S'&(?!([A-Za-z]+|#[0-9]+);)'\np2\nI0\ntRp3\n.")
-    _attrs_4356061264 = _loads('(dp1\nVclass\np2\nVfield_readonly\np3\ns.')
-    _attrs_4356060176 = _loads('(dp1\n.')
-    _attrs_4356061008 = _loads('(dp1\n.')
-    _init_stream = _loads('cchameleon.core.generation\ninitialize_stream\np1\n.')
-    _attrs_4356061968 = _loads('(dp1\n.')
     _init_default = _loads('cchameleon.core.generation\ninitialize_default\np1\n.')
-    _attrs_4356061392 = _loads('(dp1\nVstyle\np2\nVdisplay:none\np3\ns.')
-    _attrs_4356062096 = _loads('(dp1\n.')
-    _attrs_4356059600 = _loads('(dp1\n.')
+    _attrs_4355418576 = _loads('(dp1\nVstyle\np2\nVdisplay:none\np3\ns.')
+    _attrs_4355401296 = _loads('(dp1\n.')
+    _init_stream = _loads('cchameleon.core.generation\ninitialize_stream\np1\n.')
+    _attrs_4355399952 = _loads('(dp1\n.')
+    _attrs_4355441232 = _loads('(dp1\n.')
+    _attrs_4355400784 = _loads('(dp1\n.')
+    _attrs_4355400912 = _loads('(dp1\nVclass\np2\nVfield_readonly\np3\ns.')
     _init_tal = _loads('cchameleon.core.generation\ninitialize_tal\np1\n.')
+    _attrs_4355400848 = _loads('(dp1\n.')
     def render(econtext, rcontext=None):
         macros = econtext.get('macros')
         _translate = econtext.get('_translate')
@@ -30,7 +28,7 @@ def bind():
         default = None
         u'None'
         _domain = None
-        attrs = _attrs_4356062096
+        attrs = _attrs_4355441232
         u'fieldset.render_fields.itervalues()'
         _write(u'<tbody>\n  ')
         _tmp1 = _lookup_attr(_lookup_attr(econtext['fieldset'], 'render_fields'), 'itervalues')()
@@ -43,17 +41,15 @@ def bind():
             _tmp3 = _lookup_attr(field, 'requires_label')
             if _tmp3:
                 pass
-                attrs = _attrs_4356061968
+                attrs = _attrs_4355401296
                 _write(u'<tr>\n      ')
-                attrs = _attrs_4356061264
+                attrs = _attrs_4355400912
                 u"''"
                 _write(u'<td class="field_readonly">\n        ')
                 _default.value = default = ''
-                u'[field.label_text, fieldset.prettify(field.key)][int(field.label_text is None)]'
-                _content = [_lookup_attr(field, 'label_text'), _lookup_attr(econtext['fieldset'], 'prettify')(_lookup_attr(field, 'key')), ][int((_lookup_attr(field, 'label_text') is None))]
-                attrs = _attrs_4356061008
+                u'field.label_tag()'
+                _content = _lookup_attr(field, 'label_tag')()
                 u'_content'
-                _write(u'<label>')
                 _tmp3 = _content
                 _tmp = _tmp3
                 if (_tmp.__class__ not in (str, unicode, int, float, )):
@@ -68,22 +64,13 @@ def bind():
                 if (_tmp is not None):
                     if not isinstance(_tmp, unicode):
                         _tmp = str(_tmp)
-                    if ('&' in _tmp):
-                        if (';' in _tmp):
-                            _tmp = _re_amp.sub('&amp;', _tmp)
-                        else:
-                            _tmp = _tmp.replace('&', '&amp;')
-                    if ('<' in _tmp):
-                        _tmp = _tmp.replace('<', '&lt;')
-                    if ('>' in _tmp):
-                        _tmp = _tmp.replace('>', '&gt;')
                     _write(_tmp)
                 u"''"
-                _write(u'</label>\n      </td>\n      ')
+                _write(u'\n      </td>\n      ')
                 _default.value = default = ''
                 u'field.render_readonly()'
                 _content = _lookup_attr(field, 'render_readonly')()
-                attrs = _attrs_4356060176
+                attrs = _attrs_4355400848
                 u'_content'
                 _write(u'<td>')
                 _tmp3 = _content
@@ -107,11 +94,11 @@ def bind():
                 break
             _write(' ')
         _write(u'\n  ')
-        attrs = _attrs_4356061392
+        attrs = _attrs_4355418576
         _write(u'<tr style="display:none">')
-        attrs = _attrs_4356059600
+        attrs = _attrs_4355400784
         _write(u'<td>&nbsp;</td>')
-        attrs = _attrs_4356060816
+        attrs = _attrs_4355399952
         u'fieldset.render_fields.itervalues()'
         _write(u'<td>\n    ')
         _tmp1 = _lookup_attr(_lookup_attr(econtext['fieldset'], 'render_fields'), 'itervalues')()

@@ -4,17 +4,17 @@ def bind():
     _lookup_attr = _loads('cchameleon.core.codegen\nlookup_attr\np1\n.')
     _init_scope = _loads('cchameleon.core.utils\necontext\np1\n.')
     _re_amp = _loads("cre\n_compile\np1\n(S'&(?!([A-Za-z]+|#[0-9]+);)'\np2\nI0\ntRp3\n.")
-    _attrs_4360343760 = _loads('(dp1\nVclass\np2\nVgrid_error\np3\ns.')
-    _attrs_4360326480 = _loads('(dp1\nVclass\np2\nVui-widget-header\np3\ns.')
-    _attrs_4360326992 = _loads('(dp1\n.')
-    _attrs_4360326352 = _loads('(dp1\n.')
+    _attrs_4361422096 = _loads('(dp1\nVclass\np2\nVlayout-grid\np3\ns.')
+    _attrs_4361422992 = _loads('(dp1\n.')
+    _attrs_4361422800 = _loads('(dp1\n.')
     _init_stream = _loads('cchameleon.core.generation\ninitialize_stream\np1\n.')
-    _attrs_4360326608 = _loads('(dp1\n.')
-    _attrs_4360326096 = _loads('(dp1\nVclass\np2\nVlayout-grid\np3\ns.')
+    _attrs_4361422352 = _loads('(dp1\n.')
     _init_default = _loads('cchameleon.core.generation\ninitialize_default\np1\n.')
-    _attrs_4360326416 = _loads('(dp1\n.')
+    _attrs_4361422416 = _loads('(dp1\n.')
+    _attrs_4361422480 = _loads('(dp1\nVclass\np2\nVui-widget-header\np3\ns.')
+    _attrs_4361422608 = _loads('(dp1\n.')
+    _attrs_4361423312 = _loads('(dp1\nVclass\np2\nVgrid_error\np3\ns.')
     _init_tal = _loads('cchameleon.core.generation\ninitialize_tal\np1\n.')
-    _attrs_4360326800 = _loads('(dp1\n.')
     def render(econtext, rcontext=None):
         macros = econtext.get('macros')
         _translate = econtext.get('_translate')
@@ -30,11 +30,11 @@ def bind():
         default = None
         u'None'
         _domain = None
-        attrs = _attrs_4360326096
+        attrs = _attrs_4361422096
         _write(u'<table class="layout-grid">\n')
-        attrs = _attrs_4360326352
+        attrs = _attrs_4361422352
         _write(u'<thead>\n  ')
-        attrs = _attrs_4360326480
+        attrs = _attrs_4361422480
         u"''"
         _write(u'<tr class="ui-widget-header">\n    ')
         _default.value = default = ''
@@ -44,9 +44,9 @@ def bind():
         (_tmp1, _tmp2, ) = repeat.insert('field', _tmp1)
         for field in _tmp1:
             _tmp2 = (_tmp2 - 1)
-            u'field.label_text or collection.prettify(field.key)'
-            _content = (_lookup_attr(field, 'label_text') or _lookup_attr(econtext['collection'], 'prettify')(_lookup_attr(field, 'key')))
-            attrs = _attrs_4360326608
+            u'field.label()'
+            _content = _lookup_attr(field, 'label')()
+            attrs = _attrs_4361422608
             u'_content'
             _write(u'<th>')
             _tmp3 = _content
@@ -78,7 +78,7 @@ def bind():
                 break
             _write(' ')
         _write(u'\n  </tr>\n</thead>\n')
-        attrs = _attrs_4360326416
+        attrs = _attrs_4361422416
         u'collection.rows'
         _write(u'<tbody>\n  ')
         _tmp1 = _lookup_attr(econtext['collection'], 'rows')
@@ -91,7 +91,7 @@ def bind():
             dummy = _lookup_attr(econtext['collection'], '_set_active')(row)
             u'collection.get_errors(row)'
             row_errors = _lookup_attr(econtext['collection'], 'get_errors')(row)
-            attrs = _attrs_4360326800
+            attrs = _attrs_4361422800
             u"ui-widget-${repeat.row.even and 'even' or 'odd'}"
             _write(u'<tr')
             _tmp3 = ('%s%s' % (u'ui-widget-', ((_lookup_attr(repeat.row, 'even') and 'even') or 'odd'), ))
@@ -122,7 +122,7 @@ def bind():
             (_tmp3, _tmp4, ) = repeat.insert('field', _tmp3)
             for field in _tmp3:
                 _tmp4 = (_tmp4 - 1)
-                attrs = _attrs_4360326992
+                attrs = _attrs_4361422992
                 u"''"
                 _write(u'<td>\n        ')
                 _default.value = default = ''
@@ -151,7 +151,7 @@ def bind():
                 (_tmp5, _tmp6, ) = repeat.insert('error', _tmp5)
                 for error in _tmp5:
                     _tmp6 = (_tmp6 - 1)
-                    attrs = _attrs_4360343760
+                    attrs = _attrs_4361423312
                     u'error'
                     _write(u'<div class="grid_error">')
                     _tmp7 = error

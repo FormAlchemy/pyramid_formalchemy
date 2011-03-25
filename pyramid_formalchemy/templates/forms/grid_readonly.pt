@@ -2,7 +2,7 @@
   <thead>
     <tr class="ui-widget-header">
       <th tal:repeat="field collection.render_fields.itervalues()"
-          tal:content="field.label_text or collection.prettify(field.key)"></th>
+          tal:content="field.label()"></th>
     </tr>
   </thead>
   <tbody>

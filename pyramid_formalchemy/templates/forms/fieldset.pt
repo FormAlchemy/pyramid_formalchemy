@@ -8,10 +8,7 @@
     <div class="label" tal:condition="field.requires_label">
       <div tal:condition="isinstance(field.type, fatypes.Boolean)"
            tal:content="structure field.render()" />
-      <label tal:attributes="class field.is_required() and 'field_req' or 'field_opt';
-                             for field.renderer.name">
-        <span tal:replace="[field.label_text, fieldset.prettify(field.key)][int(field.label_text is None)]" />
-      </label>
+      <label tal:replace="structure field.label_tag()" />
     </div>
     <div class="fa_instructions ui-corner-all"
          tal:content="field.metadata['instructions']"

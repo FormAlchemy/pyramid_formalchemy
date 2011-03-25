@@ -4,15 +4,15 @@ def bind():
     _lookup_attr = _loads('cchameleon.core.codegen\nlookup_attr\np1\n.')
     _init_scope = _loads('cchameleon.core.utils\necontext\np1\n.')
     _re_amp = _loads("cre\n_compile\np1\n(S'&(?!([A-Za-z]+|#[0-9]+);)'\np2\nI0\ntRp3\n.")
-    _attrs_4356110736 = _loads('(dp1\n.')
-    _attrs_4356108432 = _loads('(dp1\n.')
-    _attrs_4356108624 = _loads('(dp1\n.')
-    _attrs_4356214992 = _loads('(dp1\n.')
-    _attrs_4356111376 = _loads('(dp1\n.')
+    _attrs_4356384400 = _loads('(dp1\nVclass\np2\nVui-widget-header\np3\ns.')
+    _attrs_4356384336 = _loads('(dp1\n.')
+    _attrs_4356384272 = _loads('(dp1\n.')
+    _attrs_4356384528 = _loads('(dp1\n.')
     _init_stream = _loads('cchameleon.core.generation\ninitialize_stream\np1\n.')
-    _attrs_4356108496 = _loads('(dp1\nVclass\np2\nVui-widget-header\np3\ns.')
-    _attrs_4356215312 = _loads('(dp1\n.')
+    _attrs_4356384912 = _loads('(dp1\n.')
+    _attrs_4356384720 = _loads('(dp1\n.')
     _init_default = _loads('cchameleon.core.generation\ninitialize_default\np1\n.')
+    _attrs_4356384016 = _loads('(dp1\n.')
     _init_tal = _loads('cchameleon.core.generation\ninitialize_tal\np1\n.')
     def render(econtext, rcontext=None):
         macros = econtext.get('macros')
@@ -29,11 +29,11 @@ def bind():
         default = None
         u'None'
         _domain = None
-        attrs = _attrs_4356108624
+        attrs = _attrs_4356384016
         _write(u'<table>\n  ')
-        attrs = _attrs_4356111376
+        attrs = _attrs_4356384272
         _write(u'<thead>\n    ')
-        attrs = _attrs_4356108496
+        attrs = _attrs_4356384400
         u"''"
         _write(u'<tr class="ui-widget-header">\n      ')
         _default.value = default = ''
@@ -43,9 +43,9 @@ def bind():
         (_tmp1, _tmp2, ) = repeat.insert('field', _tmp1)
         for field in _tmp1:
             _tmp2 = (_tmp2 - 1)
-            u'field.label_text or collection.prettify(field.key)'
-            _content = (_lookup_attr(field, 'label_text') or _lookup_attr(econtext['collection'], 'prettify')(_lookup_attr(field, 'key')))
-            attrs = _attrs_4356108432
+            u'field.label()'
+            _content = _lookup_attr(field, 'label')()
+            attrs = _attrs_4356384528
             u'_content'
             _write(u'<th>')
             _tmp3 = _content
@@ -77,7 +77,7 @@ def bind():
                 break
             _write(' ')
         _write(u'\n    </tr>\n  </thead>\n  ')
-        attrs = _attrs_4356110736
+        attrs = _attrs_4356384336
         u'collection.rows'
         _write(u'<tbody>\n    ')
         _tmp1 = _lookup_attr(econtext['collection'], 'rows')
@@ -88,7 +88,7 @@ def bind():
             u'collection._set_active(row)'
             _write(u'')
             dummy = _lookup_attr(econtext['collection'], '_set_active')(row)
-            attrs = _attrs_4356214992
+            attrs = _attrs_4356384720
             u"ui-widget-${repeat.row.even and 'even' or 'odd'}"
             _write(u'<tr')
             _tmp3 = ('%s%s' % (u'ui-widget-', ((_lookup_attr(repeat.row, 'even') and 'even') or 'odd'), ))
@@ -123,7 +123,7 @@ def bind():
                 _tmp4 = (_tmp4 - 1)
                 u'field.render_readonly()'
                 _content = _lookup_attr(field, 'render_readonly')()
-                attrs = _attrs_4356215312
+                attrs = _attrs_4356384912
                 u'_content'
                 _write(u'<td>')
                 _tmp5 = _content

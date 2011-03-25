@@ -4,20 +4,19 @@ def bind():
     _lookup_attr = _loads('cchameleon.core.codegen\nlookup_attr\np1\n.')
     _init_scope = _loads('cchameleon.core.utils\necontext\np1\n.')
     _re_amp = _loads("cre\n_compile\np1\n(S'&(?!([A-Za-z]+|#[0-9]+);)'\np2\nI0\ntRp3\n.")
-    _attrs_4356305168 = _loads('(dp1\nVclass\np2\nVfield_input\np3\ns.')
-    _attrs_4356308368 = _loads('(dp1\nVclass\np2\nVfa_instructions ui-corner-all\np3\ns.')
-    _attrs_4356306896 = _loads('(dp1\n.')
-    _attrs_4356307792 = _loads('(dp1\nVclass\np2\nVlabel\np3\ns.')
+    _attrs_4355399760 = _loads('(dp1\n.')
+    _attrs_4355400208 = _loads('(dp1\nVclass\np2\nVfa_instructions ui-corner-all\np3\ns.')
+    _attrs_4355399888 = _loads('(dp1\n.')
+    _attrs_4355400144 = _loads('(dp1\nVclass\np2\nVlabel\np3\ns.')
     _init_stream = _loads('cchameleon.core.generation\ninitialize_stream\np1\n.')
-    _attrs_4356308560 = _loads('(dp1\n.')
-    _attrs_4356307152 = _loads('(dp1\n.')
-    _attrs_4356305488 = _loads('(dp1\n.')
     _init_default = _loads('cchameleon.core.generation\ninitialize_default\np1\n.')
-    _attrs_4356307536 = _loads('(dp1\nVclass\np2\nVfa_field ui-widget\np3\ns.')
-    _attrs_4356308240 = _loads('(dp1\n.')
-    _attrs_4356305040 = _loads('(dp1\n.')
+    _attrs_4355400400 = _loads('(dp1\nVclass\np2\nVui-state-error ui-corner-all\np3\ns.')
+    _attrs_4355400080 = _loads('(dp1\n.')
+    _attrs_4355400464 = _loads('(dp1\nVclass\np2\nVfield_input\np3\ns.')
+    _attrs_4355400528 = _loads('(dp1\n.')
+    _attrs_4355400016 = _loads('(dp1\nVclass\np2\nVfa_field ui-widget\np3\ns.')
     _init_tal = _loads('cchameleon.core.generation\ninitialize_tal\np1\n.')
-    _attrs_4356308944 = _loads('(dp1\nVclass\np2\nVui-state-error ui-corner-all\np3\ns.')
+    _attrs_4355400272 = _loads('(dp1\n.')
     def render(econtext, rcontext=None):
         macros = econtext.get('macros')
         _translate = econtext.get('_translate')
@@ -40,7 +39,7 @@ def bind():
         _tmp1 = _lookup_attr(_lookup_attr(econtext['fieldset'], 'errors'), 'get')(None, False)
         if _tmp1:
             pass
-            attrs = _attrs_4356306896
+            attrs = _attrs_4355399760
             u"''"
             _write(u'<div>\n  ')
             _default.value = default = ''
@@ -52,7 +51,7 @@ def bind():
                 _tmp2 = (_tmp2 - 1)
                 u'error'
                 _content = error
-                attrs = _attrs_4356307152
+                attrs = _attrs_4355399888
                 u'_content'
                 _write(u'<div>')
                 _tmp3 = _content
@@ -92,13 +91,13 @@ def bind():
         for field in _tmp1:
             _tmp2 = (_tmp2 - 1)
             _write(u'\n  ')
-            attrs = _attrs_4356307536
+            attrs = _attrs_4355400016
             u'field.requires_label'
             _write(u'<div class="fa_field ui-widget">\n    ')
             _tmp3 = _lookup_attr(field, 'requires_label')
             if _tmp3:
                 pass
-                attrs = _attrs_4356307792
+                attrs = _attrs_4355400144
                 u"''"
                 _write(u'<div class="label">\n      ')
                 _default.value = default = ''
@@ -108,7 +107,7 @@ def bind():
                     pass
                     u'field.render()'
                     _content = _lookup_attr(field, 'render')()
-                    attrs = _attrs_4356308560
+                    attrs = _attrs_4355400272
                     u'_content'
                     _write(u'<div>')
                     _tmp3 = _content
@@ -127,58 +126,11 @@ def bind():
                             _tmp = str(_tmp)
                         _write(_tmp)
                     _write(u'</div>')
-                _write(u'\n      ')
-                attrs = _attrs_4356305040
-                u"field.is_required() and 'field_req' or 'field_opt'"
-                _write(u'<label')
-                _tmp3 = ((_lookup_attr(field, 'is_required')() and 'field_req') or 'field_opt')
-                if (_tmp3 is _default):
-                    _tmp3 = None
-                if ((_tmp3 is not None) and (_tmp3 is not False)):
-                    if (_tmp3.__class__ not in (str, unicode, int, float, )):
-                        _tmp3 = unicode(_translate(_tmp3, domain=_domain, mapping=None, target_language=target_language, default=None))
-                    else:
-                        if not isinstance(_tmp3, unicode):
-                            _tmp3 = str(_tmp3)
-                    if ('&' in _tmp3):
-                        if (';' in _tmp3):
-                            _tmp3 = _re_amp.sub('&amp;', _tmp3)
-                        else:
-                            _tmp3 = _tmp3.replace('&', '&amp;')
-                    if ('<' in _tmp3):
-                        _tmp3 = _tmp3.replace('<', '&lt;')
-                    if ('>' in _tmp3):
-                        _tmp3 = _tmp3.replace('>', '&gt;')
-                    if ('"' in _tmp3):
-                        _tmp3 = _tmp3.replace('"', '&quot;')
-                    _write(((' class="' + _tmp3) + '"'))
-                u'field.renderer.name'
-                _tmp3 = _lookup_attr(_lookup_attr(field, 'renderer'), 'name')
-                if (_tmp3 is _default):
-                    _tmp3 = None
-                if ((_tmp3 is not None) and (_tmp3 is not False)):
-                    if (_tmp3.__class__ not in (str, unicode, int, float, )):
-                        _tmp3 = unicode(_translate(_tmp3, domain=_domain, mapping=None, target_language=target_language, default=None))
-                    else:
-                        if not isinstance(_tmp3, unicode):
-                            _tmp3 = str(_tmp3)
-                    if ('&' in _tmp3):
-                        if (';' in _tmp3):
-                            _tmp3 = _re_amp.sub('&amp;', _tmp3)
-                        else:
-                            _tmp3 = _tmp3.replace('&', '&amp;')
-                    if ('<' in _tmp3):
-                        _tmp3 = _tmp3.replace('<', '&lt;')
-                    if ('>' in _tmp3):
-                        _tmp3 = _tmp3.replace('>', '&gt;')
-                    if ('"' in _tmp3):
-                        _tmp3 = _tmp3.replace('"', '&quot;')
-                    _write(((' for="' + _tmp3) + '"'))
                 u"''"
-                _write(u'>\n        ')
+                _write(u'\n      ')
                 _default.value = default = ''
-                u'[field.label_text, fieldset.prettify(field.key)][int(field.label_text is None)]'
-                _content = [_lookup_attr(field, 'label_text'), _lookup_attr(econtext['fieldset'], 'prettify')(_lookup_attr(field, 'key')), ][int((_lookup_attr(field, 'label_text') is None))]
+                u'field.label_tag()'
+                _content = _lookup_attr(field, 'label_tag')()
                 u'_content'
                 _tmp3 = _content
                 _tmp = _tmp3
@@ -194,17 +146,8 @@ def bind():
                 if (_tmp is not None):
                     if not isinstance(_tmp, unicode):
                         _tmp = str(_tmp)
-                    if ('&' in _tmp):
-                        if (';' in _tmp):
-                            _tmp = _re_amp.sub('&amp;', _tmp)
-                        else:
-                            _tmp = _tmp.replace('&', '&amp;')
-                    if ('<' in _tmp):
-                        _tmp = _tmp.replace('<', '&lt;')
-                    if ('>' in _tmp):
-                        _tmp = _tmp.replace('>', '&gt;')
                     _write(_tmp)
-                _write(u'\n      </label>\n    </div>')
+                _write(u'\n    </div>')
             u"u'\\n    '"
             _write(u'\n    ')
             _default.value = default = u'\n    '
@@ -214,7 +157,7 @@ def bind():
                 pass
                 u"field.metadata['instructions']"
                 _content = _lookup_attr(field, 'metadata')['instructions']
-                attrs = _attrs_4356308368
+                attrs = _attrs_4355400208
                 u'_content'
                 _write(u'<div class="fa_instructions ui-corner-all">')
                 _tmp3 = _content
@@ -247,7 +190,7 @@ def bind():
             _tmp3 = _lookup_attr(field, 'errors')
             if _tmp3:
                 pass
-                attrs = _attrs_4356308944
+                attrs = _attrs_4355400400
                 u"''"
                 _write(u'<div class="ui-state-error ui-corner-all">\n      ')
                 _default.value = default = ''
@@ -259,7 +202,7 @@ def bind():
                     _tmp4 = (_tmp4 - 1)
                     u'error'
                     _content = error
-                    attrs = _attrs_4356305488
+                    attrs = _attrs_4355400528
                     u'_content'
                     _write(u'<div>')
                     _tmp5 = _content
@@ -300,7 +243,7 @@ def bind():
                 pass
                 u'field.render()'
                 _content = _lookup_attr(field, 'render')()
-                attrs = _attrs_4356305168
+                attrs = _attrs_4355400464
                 u'_content'
                 _write(u'<div class="field_input">')
                 _tmp3 = _content
@@ -324,7 +267,7 @@ def bind():
             _tmp3 = (not _lookup_attr(field, 'is_readonly')() and ((_lookup_attr(econtext['fieldset'], 'focus') == field) or (_lookup_attr(econtext['fieldset'], 'focus') is True)) and not focus_rendered)
             if _tmp3:
                 pass
-                attrs = _attrs_4356308240
+                attrs = _attrs_4355400080
                 u'True'
                 _write(u'<script>\n    ')
                 focus_rendered = True
