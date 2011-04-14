@@ -1,3 +1,9 @@
+0.2
+---
+
+- Take care of permissions. You can now use an __acl__ attribute in your SA
+  models to restrict access
+
 0.1
 ---
 

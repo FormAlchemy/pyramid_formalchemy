@@ -30,6 +30,10 @@ class Test_1_UI(unittest.TestCase):
 
     def test_crud(self):
         # index
+        resp = self.app.get('/admin')
+        self.assertEqual(resp.status_int, 302)
+        assert '/admin/' in resp.location, resp
+
         resp = self.app.get('/admin/')
         resp.mustcontain('/admin/Foo')
         resp = resp.click('Foo')

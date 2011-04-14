@@ -6,12 +6,12 @@ here = os.path.abspath(os.path.dirname(__file__))
 README = open(os.path.join(here, 'README.txt')).read()
 CHANGES = open(os.path.join(here, 'CHANGES.txt')).read()
 
-requires = ['pyramid>=1.0', 'WebError', 'FormAlchemy>=1.3.5']
+requires = ['pyramid>=1.0', 'WebError', 'FormAlchemy>=1.3.7']
 
 setup(name='pyramid_formalchemy',
-      version='0.1',
+      version='0.2',
       description='FormAlchemy plugins and helpers for Pyramid',
-      long_description=README + '\n\n' +  CHANGES,
+      long_description=README + '\n\nCHANGES\n=======\n\n' +  CHANGES,
       classifiers=[
         "Programming Language :: Python",
         "Framework :: Pylons",

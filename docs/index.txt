@@ -55,6 +55,26 @@ you can override this. In this case you don't need to specify a package::
 You can also change the path ``prefix`` used. pyramid_formalchemy will use
 ``/admin/`` by default. See :func:`~pyramid_formalchemy.configure`.
 
+Setting permissions
+===================
+
+pyramid_formalchemy take care of some ``__acl__`` attributes.
+
+Setting permissions for the globale interface
+---------------------------------------------
+
+You just need to subclass the default factory in your application:
+
+.. literalinclude:: ../pyramidapp/pyramidapp/security.py
+
+Setting permissions per model
+-----------------------------
+
+You can also add an ``__acl__`` attribute to your model class:
+
+.. literalinclude:: ../pyramidapp/pyramidapp/models.py
+   :pyobject: Bar
+
 Api
 ===
 
