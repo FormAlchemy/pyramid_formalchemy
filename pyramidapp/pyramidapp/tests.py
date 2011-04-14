@@ -11,22 +11,16 @@ dirname = os.path.abspath(__file__)
 dirname = os.path.dirname(dirname)
 dirname = os.path.dirname(dirname)
 
-def _initTestingDB():
-   from sqlalchemy import create_engine
-   from pyramidapp.models import initialize_sql
-   session = initialize_sql(create_engine('sqlite://'))
-   return session
-
-class TestUI(unittest.TestCase):
+class Test_1_UI(unittest.TestCase):
 
     config = os.path.join(dirname, 'test.ini')
+    extra_environ = {}
 
     def setUp(self):
         app = loadapp('config:%s' % self.config)
-        self.app = TestApp(app)
+        self.app = TestApp(app, extra_environ=self.extra_environ)
         self.config = Configurator(autocommit=True)
         self.config.begin()
-        #_initTestingDB()
 
     def tearDown(self):
         self.config.end()
@@ -103,11 +97,30 @@ class TestUI(unittest.TestCase):
         # delete
         response = self.app.delete(str(data['item_url']))
 
+class Test_2_Security(Test_1_UI):
 
+    config = os.path.join(dirname, 'security.ini')
+    extra_environ = {'REMOTE_USER': 'admin'}
 
-class TestJQuery(TestUI):
+    def test_model_security(self):
+        resp = self.app.get('/admin/', extra_environ={'REMOTE_USER': 'editor'})
+        self.assertEqual(resp.status_int, 200)
 
-    config = os.path.join(dirname, 'test2.ini')
+        resp = self.app.get('/admin/Foo', extra_environ={'REMOTE_USER': 'editor'})
+        self.assertEqual(resp.status_int, 200)
+
+        resp = self.app.get('/admin/Foo/new', status=403, extra_environ={'REMOTE_USER': 'editor'})
+        self.assertEqual(resp.status_int, 403)
+
+        resp = self.app.get('/admin/Bar', status=403, extra_environ={'REMOTE_USER': 'editor'})
+        self.assertEqual(resp.status_int, 403)
+
+        resp = self.app.get('/admin/Bar', extra_environ={'REMOTE_USER': 'bar_manager'})
+        self.assertEqual(resp.status_int, 200)
+
+class Test_3_JQuery(Test_1_UI):
+
+    config = os.path.join(dirname, 'jquery.ini')
 
     def test_crud(self):
         # index

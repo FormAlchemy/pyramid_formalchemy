@@ -22,4 +22,3 @@ def main(global_config, **settings):
     return config.make_wsgi_app()
 
 
-

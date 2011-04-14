@@ -87,16 +87,6 @@ class ModelView(object):
                     models[key] = request.fa_url(key, request.format)
         return self.render(models=models)
 
-    def get_model(self):
-        request = self.request
-        if isinstance(request.model, list):
-            for model in request.model:
-                if model.__name__ == self.model_name:
-                    return model
-        elif hasattr(request.model, self.model_name):
-            return getattr(request.model, self.model_name)
-        raise NotFound()
-
     def sync(self, fs, id=None):
         """sync a record. If ``id`` is None add a new record else save current one.
 
@@ -187,7 +177,7 @@ class ModelView(object):
         Default is::
 
             S = self.Session()
-            query = S.query(self.get_model())
+            query = S.query(self.context.get_model())
             kwargs = request.environ.get('pylons.routes_dict', {})
             return Page(query, page=int(request.GET.get('page', '1')), **kwargs)
         """
@@ -197,7 +187,7 @@ class ModelView(object):
             if partial:
                 url += "&partial=1"
             return url
-        options = dict(collection=S.query(self.get_model()),
+        options = dict(collection=S.query(self.context.get_model()),
                        page=int(self.request.GET.get('page', '1')),
                        url=get_page_url)
         options.update(kwargs)
@@ -210,16 +200,16 @@ class ModelView(object):
         Default is::
 
             S = self.Session()
-            model = self.get_model()
+            model = self.context.get_model()
             if id:
                 model = S.query(model).get(id)
             else:
                 model = model()
-            return model or abort(404)
+            raise NotFound()
 
         """
         S = self.Session()
-        model = self.get_model()
+        model = self.context.get_model()
         if id:
             model = S.query(model).get(id)
         if model:
@@ -228,12 +218,6 @@ class ModelView(object):
 
     def get_fieldset(self, id=None):
         """return a ``FieldSet`` object bound to the correct record for ``id``.
-
-        Default is::
-
-            fs = self.FieldSet(self.get(id))
-            fs.engine = fs.engine or self.engine
-            return fs
         """
         request = self.request
         if request.forms and hasattr(request.forms, self.model_name):
@@ -246,14 +230,6 @@ class ModelView(object):
 
     def get_add_fieldset(self):
         """return a ``FieldSet`` used for add form.
-
-        Default is::
-
-            fs = self.get_fieldset()
-            for field in fs.render_fields.itervalues():
-                if field.is_readonly():
-                    del fs[field.name]
-            return fs
         """
         fs = self.get_fieldset()
         for field in fs.render_fields.itervalues():
@@ -266,7 +242,7 @@ class ModelView(object):
 
         Default is::
 
-            grid = self.Grid(self.get_model())
+            grid = self.Grid(self.context.get_model())
             grid.engine = self.engine
             self.update_grid(grid)
             return grid
@@ -279,7 +255,7 @@ class ModelView(object):
             g.readonly = True
             self.update_grid(g)
             return g
-        grid = self.Grid(self.get_model())
+        grid = self.Grid(self.context.get_model())
         grid.engine = self.engine
         self.update_grid(grid)
         return grid
@@ -353,7 +329,7 @@ class ModelView(object):
             fs = fs.bind(data=data, session=S)
         except:
             # non SA forms
-            fs = fs.bind(self.get_model(), data=data, session=S)
+            fs = fs.bind(self.context.get_model(), data=data, session=S)
         if fs.validate():
             fs.sync()
             self.sync(fs)
