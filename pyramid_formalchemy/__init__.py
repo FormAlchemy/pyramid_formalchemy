@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from pyramid.httpexceptions import HTTPFound
 
 def includeme(config):
     """include formalchemy's zcml"""
@@ -38,6 +39,11 @@ def formalchemy_admin(config, route_name,
     factory = config.maybe_dotted(factory)
 
     factory = type('%s_%s' % (factory.__name__, route_name), (factory,), factory_args)
+
+    def redirect(request):
+        return HTTPFound(location='%s/%s/' % (request.application_url, route_name))
+
+    config.add_route('%s_redirect' % route_name, route_name, redirect)
 
     config.add_route(route_name, '%s/*traverse' % route_name,
                      factory=factory)
