@@ -12,9 +12,8 @@ class ModelsWithACL(Models):
     __acl__ = [
             (Allow, 'admin', ALL_PERMISSIONS),
             (Allow, Authenticated, 'view'),
-            (Allow, 'manager', 'new'),
-            (Allow, ('manager', 'editor'), 'edit'),
-            (Allow, 'manager', 'delete'),
+            (Allow, 'editor', 'edit'),
+            (Allow, 'manager', ('new', 'edit', 'delete')),
         ]
 
 def main(global_config, **settings):
