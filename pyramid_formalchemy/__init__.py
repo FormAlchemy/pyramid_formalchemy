@@ -92,6 +92,7 @@ def formalchemy_admin(config, route_name,
                     **kw)
     config.add_view(context='pyramid_formalchemy.resources.Model',
                     renderer='json',
+                    name='',
                     attr='update',
                     request_method='POST',
                     permission='edit',

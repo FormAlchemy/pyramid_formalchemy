@@ -12,6 +12,7 @@ from pyramid.response import Response
 from pyramid import httpexceptions as exc
 from pyramid.exceptions import NotFound
 from pyramid_formalchemy.utils import TemplateEngine
+import logging
 
 try:
     from formalchemy.ext.couchdb import Document
@@ -338,8 +339,9 @@ class ModelView(object):
                 if request.is_xhr:
                     response.content_type = 'text/plain'
                     return ''
+                next = request.POST.get('next') or request.fa_url(request.model_name)
                 return exc.HTTPFound(
-                    location=request.fa_url(request.model_name))
+                    location=next)
             else:
                 fs.rebind(fs.model, data=None)
                 return self.render(fs=fs)
