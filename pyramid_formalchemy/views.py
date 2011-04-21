@@ -112,13 +112,13 @@ class ModelView(object):
         request = self.request
         model_name = request.model_name
         id = request.model_id
-        items.append((request.fa_url(), 'root'))
+        items.append((request.fa_url(), 'root', 'root_url'))
         if self.model_name:
-            items.append((request.fa_url(model_name), model_name))
+            items.append((request.fa_url(model_name), model_name, 'model_url'))
         if id and hasattr(fs.model, '__unicode__'):
-            items.append((request.fa_url(model_name, id), u'%s' % fs.model))
+            items.append((request.fa_url(model_name, id), u'%s' % self.context.get_instance(), 'instance_url'))
         elif id:
-            items.append((request.fa_url(model_name, id), id))
+            items.append((request.fa_url(model_name, id), id, 'instance_url'))
         return items
 
     def render(self, **kwargs):
@@ -166,7 +166,7 @@ class ModelView(object):
                 fields = fs.render_fields
                 if field_name in fields:
                     field = fields[field_name]
-                    return field.render()
+                    return Response(field.render())
                 else:
                     raise NotFound()
             return Response(fs.render())
@@ -238,7 +238,7 @@ class ModelView(object):
                 del fs[field.name]
         return fs
 
-    def get_grid(self):
+    def get_grid(self, model_name=None):
         """return a Grid object
 
         Default is::
@@ -249,14 +249,15 @@ class ModelView(object):
             return grid
         """
         request = self.request
-        model_name = self.model_name
+        model_name = model_name or self.model_name
         if request.forms and hasattr(request.forms, '%sGrid' % model_name):
             g = getattr(request.forms, '%sGrid' % model_name)
             g.engine = g.engine or self.engine
             g.readonly = True
             self.update_grid(g)
             return g
-        grid = self.Grid(self.context.get_model())
+        model = self.context.get_model()
+        grid = self.Grid(model)
         grid.engine = self.engine
         self.update_grid(grid)
         return grid
@@ -287,7 +288,7 @@ class ModelView(object):
 
     def listing(self, **kwargs):
         """listing page"""
-        page = self.get_page()
+        page = self.get_page(**kwargs)
         fs = self.get_grid()
         fs = fs.bind(instances=page)
         fs.readonly = True

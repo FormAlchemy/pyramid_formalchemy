@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from pyramid.exceptions import NotFound
 import logging
 
 log = logging.getLogger(__name__)
@@ -18,22 +19,32 @@ class Base(object):
             request.model_class = None
             request.model_name = None
             request.model_id = None
+            request.relation = None
             request.format = 'html'
 
     def get_model(self):
         request = self.request
         if request.model_class:
             return request.model_class
-        if request.model_name:
-            if isinstance(request.model, list):
-                for model in request.model:
-                    if model.__name__ == request.model_name:
-                        request.model_class = model
-                        return request.model_class
-            elif hasattr(request.model, request.model_name):
-                request.model_class = getattr(request.model, request.model_name)
-                return request.model_class
-        raise NotFound()
+        model_name = request.model_name
+        model_class = None
+        if isinstance(request.model, list):
+            for model in request.model:
+                if model.__name__ == model_name:
+                    model_class = model
+                    break
+        elif hasattr(request.model, model_name):
+            model_class = getattr(request.model, model_name)
+        if model_class is None:
+            raise NotFound()
+        request.model_class = model_class
+        return model_class
+
+    def get_instance(self):
+        model = self.get_model()
+        session = self.request.session_factory()
+        return session.query(model).get(self.request.model_id)
+
 
 
 class Models(Base):
