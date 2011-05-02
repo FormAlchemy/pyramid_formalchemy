@@ -17,7 +17,14 @@ def main(global_config, **settings):
     # pyramid_formalchemy's configuration
     config.include('pyramid_formalchemy')
     config.include('fa.jquery')
-    config.formalchemy_admin('admin', package='pyramidapp', view='fa.jquery.pyramid.ModelView')
+
+    # register an admin UI
+    config.formalchemy_admin('/admin', package='pyramidapp', view='fa.jquery.pyramid.ModelView')
+
+    # register an admin UI for a single model
+    config.formalchemy_model('/foo', package='pyramidapp',
+                                    view='fa.jquery.pyramid.ModelView',
+                                    model='pyramidapp.models.Foo')
 
     return config.make_wsgi_app()
 

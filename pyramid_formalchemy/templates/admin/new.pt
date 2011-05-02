@@ -2,7 +2,7 @@
   <body>
     <div metal:fill-slot="main">
       <form method="POST" enctype="multipart/form-data"
-            tal:attributes="action request.route_url(request.route_name, traverse=request.model_name)"
+            tal:attributes="action request.fa_url(request.model_name)"
         >
         <div tal:content="structure fs.render()" />
         <p class="fa_field">
@@ -10,7 +10,7 @@
             <input type="submit" value="${F_('Save')}" />
           </a>
           <a class="ui-widget-header ui-widget-link ui-corner-all"
-             tal:attributes="href request.route_url(request.route_name, traverse=request.model_name)">
+             tal:attributes="href request.fa_url(request.model_name)">
             <span class="ui-icon ui-icon-circle-arrow-w"></span>
             ${F_('Cancel')}
           </a>

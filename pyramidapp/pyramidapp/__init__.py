@@ -15,7 +15,12 @@ def main(global_config, **settings):
 
     # pyramid_formalchemy's configuration
     config.include('pyramid_formalchemy')
+
+    # register an admin UI
     config.formalchemy_admin('admin', package='pyramidapp')
+
+    # register an admin UI for a single model
+    config.formalchemy_model('foo', package='pyramidapp', model='pyramidapp.models.Foo')
 
     return config.make_wsgi_app()
 

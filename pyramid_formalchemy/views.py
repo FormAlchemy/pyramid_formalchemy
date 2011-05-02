@@ -59,18 +59,18 @@ class ModelView(object):
 
     def Session(self):
         """return a Session object. You **must** override this."""
-        return self.request.session_factory()
+        return self.request.session_factory
 
     def models(self, **kwargs):
         """Models index page"""
         request = self.request
         models = {}
-        if isinstance(request.model, list):
-            for model in request.model:
+        if isinstance(request.models, list):
+            for model in request.models:
                 key = model.__name__
                 models[key] = request.fa_url(key, request.format)
         else:
-            for key, obj in request.model.__dict__.iteritems():
+            for key, obj in request.models.__dict__.iteritems():
                 if not key.startswith('_'):
                     if Document is not None:
                         try:
@@ -195,37 +195,16 @@ class ModelView(object):
         collection = options.pop('collection')
         return Page(collection, **options)
 
-    def get(self, id=None):
-        """return correct record for ``id`` or a new instance.
-
-        Default is::
-
-            S = self.Session()
-            model = self.context.get_model()
-            if id:
-                model = S.query(model).get(id)
-            else:
-                model = model()
-            raise NotFound()
-
-        """
-        S = self.Session()
-        model = self.context.get_model()
-        if id:
-            model = S.query(model).get(id)
-        if model:
-            return model
-        raise NotFound()
-
     def get_fieldset(self, id=None):
         """return a ``FieldSet`` object bound to the correct record for ``id``.
         """
         request = self.request
+        model = id and request.model_instance or request.model_class
         if request.forms and hasattr(request.forms, self.model_name):
             fs = getattr(request.forms, self.model_name)
             fs.engine = fs.engine or self.engine
-            return id and fs.bind(self.get(id)) or fs
-        fs = self.FieldSet(self.get(id))
+            return id and fs.bind(model) or fs
+        fs = self.FieldSet(model)
         fs.engine = fs.engine or self.engine
         return fs
 
@@ -338,8 +317,7 @@ class ModelView(object):
             S.flush()
             if request.format == 'html':
                 if request.is_xhr:
-                    response.content_type = 'text/plain'
-                    return ''
+                    return Response(content_type='text/plain')
                 next = request.POST.get('next') or request.fa_url(request.model_name)
                 return exc.HTTPFound(
                     location=next)
@@ -351,8 +329,7 @@ class ModelView(object):
     def delete(self, **kwargs):
         """REST api"""
         request = self.request
-        id = request.model_id
-        record = self.get(id)
+        record = request.model_instance
         if record:
             S = self.Session()
             S.delete(record)
@@ -362,7 +339,7 @@ class ModelView(object):
                 response.content_type = 'text/plain'
                 return response
             return exc.HTTPFound(location=request.fa_url(request.model_name))
-        return self.render(id=id)
+        return self.render(id=request.model_id)
 
     def show(self):
         """REST api"""

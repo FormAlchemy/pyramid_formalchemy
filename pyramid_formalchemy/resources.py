@@ -13,14 +13,18 @@ class Base(object):
         if hasattr(self, '__fa_route_name__'):
             request.session_factory = self.__session_factory__
             request.route_name = self.__fa_route_name__
-            request.model = self.__models__
+            request.models = self.__models__
             request.forms = self.__forms__
             request.fa_url = self.fa_url
+            request.model_instance = None
             request.model_class = None
             request.model_name = None
             request.model_id = None
             request.relation = None
             request.format = 'html'
+            if self.__model_class__:
+                request.model_class = self.__model_class__
+                request.model_name = self.__model_class__.__name__
 
     def get_model(self):
         request = self.request
@@ -28,13 +32,13 @@ class Base(object):
             return request.model_class
         model_name = request.model_name
         model_class = None
-        if isinstance(request.model, list):
-            for model in request.model:
+        if isinstance(request.models, list):
+            for model in request.models:
                 if model.__name__ == model_name:
                     model_class = model
                     break
-        elif hasattr(request.model, model_name):
-            model_class = getattr(request.model, model_name)
+        elif hasattr(request.models, model_name):
+            model_class = getattr(request.models, model_name)
         if model_class is None:
             raise NotFound()
         request.model_class = model_class
@@ -45,6 +49,14 @@ class Base(object):
         session = self.request.session_factory()
         return session.query(model).get(self.request.model_id)
 
+    def _fa_url(self, *args):
+        matchdict = self.request.matchdict.copy()
+        if 'traverse' in matchdict:
+            del matchdict['traverse']
+        return self.request.route_url(self.__fa_route_name__,
+                                      traverse=tuple([str(a) for a in args]),
+                                      **matchdict)
+
 
 
 class Models(Base):
@@ -53,8 +65,7 @@ class Models(Base):
         Base.__init__(self, request, None)
 
     def fa_url(self, *args):
-        return self.request.route_url(self.__fa_route_name__,
-                                      traverse='/'.join([str(a) for a in args]))
+        return self._fa_url(*args)
 
     def __getitem__(self, item):
         if item in ('json', 'xhr'):
@@ -69,18 +80,21 @@ class Models(Base):
 
 class ModelListing(Base):
 
-    def __init__(self, request, name):
+    def __init__(self, request, name=None):
         Base.__init__(self, request, name)
-        request.model_name = name
-        model = self.get_model()
+        if name is None:
+            # request.model_class and request.model_name are already set
+            model = request.model_class
+        else:
+            request.model_name = name
+            model = self.get_model()
         if hasattr(model, '__acl__'):
             # get permissions from SA class
             self.__acl__ = model.__acl__
 
     def fa_url(self, *args):
-        args = args[1:]
-        return self.request.route_url(self.__fa_route_name__,
-                                      traverse='/'.join([str(a) for a in args]))
+        return self._fa_url(*args[1:])
+
     def __getitem__(self, item):
         if item in ('json', 'xhr'):
             self.request.format = item
@@ -94,11 +108,10 @@ class ModelListing(Base):
 class Model(Base):
 
     def fa_url(self, *args):
-        args = args[2:]
-        return self.request.route_url(self.__fa_route_name__,
-                                      traverse='/'.join([str(a) for a in args]))
+        return self._fa_url(*args[2:])
 
     def __init__(self, request, name):
         Base.__init__(self, request, name)
+        request.model_instance = request.session_factory.query(request.model_class).get(name)
         request.model_id = name
 

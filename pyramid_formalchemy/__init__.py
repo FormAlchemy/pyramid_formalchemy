@@ -1,16 +1,28 @@
 # -*- coding: utf-8 -*-
 from pyramid.httpexceptions import HTTPFound
+from pyramid_formalchemy.resources import Models
 
 def includeme(config):
     """include formalchemy's zcml"""
     config.add_static_view('fa_admin', 'pyramid_formalchemy:static')
     config.add_directive('formalchemy_admin', 'pyramid_formalchemy.formalchemy_admin')
+    config.add_directive('formalchemy_model', 'pyramid_formalchemy.formalchemy_model')
+
+def formalchemy_model(config, route_name,
+                      factory='pyramid_formalchemy.resources.ModelListing',
+                      view='pyramid_formalchemy.views.ModelView',
+                      package=None, model=None, forms=None, session_factory=None, **kwargs):
+    model = config.maybe_dotted(model)
+    return formalchemy_admin(config, route_name, factory=factory, view=view, package=package,
+                             models=[model], model=model, forms=forms, session_factory=session_factory, **kwargs)
 
 def formalchemy_admin(config, route_name,
                       factory='pyramid_formalchemy.resources.Models',
                       view='pyramid_formalchemy.views.ModelView',
-                      package=None, models=None, forms=None, session_factory=None):
+                      package=None, models=None, forms=None, session_factory=None, **kwargs):
     """configure formalchemy's admin interface"""
+
+    route_name = route_name.strip('/')
 
     kw = dict(route_name=route_name, view=view)
 
@@ -30,8 +42,9 @@ def formalchemy_admin(config, route_name,
             session_factory = config.maybe_dotted('%s.models.DBSession' % package)
 
     factory_args = {
-        '__models__': models,
         '__forms__': forms,
+        '__models__': models,
+        '__model_class__': kwargs.get('model'),
         '__session_factory__': session_factory,
         '__fa_route_name__': route_name,
         }
@@ -41,19 +54,24 @@ def formalchemy_admin(config, route_name,
     factory = type('%s_%s' % (factory.__name__, route_name), (factory,), factory_args)
 
     def redirect(request):
-        return HTTPFound(location='%s/%s/' % (request.application_url, route_name))
+        """redirect /route_name to /route_name/"""
+        matchdict = request.matchdict.copy()
+        url = request.route_url(route_name, traverse=(), **matchdict)
+        return HTTPFound(location=url)
 
     config.add_route('%s_redirect' % route_name, route_name, redirect)
 
     config.add_route(route_name, '%s/*traverse' % route_name,
                      factory=factory)
 
-    config.add_view(context=factory,
-                    renderer='pyramid_formalchemy:templates/admin/models.pt',
-                    attr='models',
-                    request_method='GET',
-                    permission='view',
-                    **kw)
+    if issubclass(factory, Models):
+        # don't want all models
+        config.add_view(context=factory,
+                        renderer='pyramid_formalchemy:templates/admin/models.pt',
+                        attr='models',
+                        request_method='GET',
+                        permission='view',
+                        **kw)
 
     config.add_view(context='pyramid_formalchemy.resources.ModelListing',
                     renderer='pyramid_formalchemy:templates/admin/listing.pt',

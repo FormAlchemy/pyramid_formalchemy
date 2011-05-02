@@ -1,10 +1,17 @@
-import unittest
+import unittest2 as unittest
 from pyramid.config import Configurator
 from pyramid import testing
+from sqlalchemy.orm import scoped_session
+from sqlalchemy.orm import sessionmaker
+
+from zope.sqlalchemy import ZopeTransactionExtension
 
 import os
+import shutil
+import tempfile
 from webtest import TestApp
 from pyramidapp import main
+from pyramidapp import models
 from paste.deploy import loadapp
 
 dirname = os.path.abspath(__file__)
@@ -17,18 +24,15 @@ class Test_1_UI(unittest.TestCase):
     extra_environ = {}
 
     def setUp(self):
-        app = loadapp('config:%s' % self.config)
+        app = loadapp('config:%s' % self.config, global_conf={'db':'sqlite://'})
         self.app = TestApp(app, extra_environ=self.extra_environ)
         self.config = Configurator(autocommit=True)
         self.config.begin()
 
-    def tearDown(self):
-        self.config.end()
-
     def test_index(self):
         resp = self.app.get('/')
 
-    def test_crud(self):
+    def test_1_crud(self):
         # index
         resp = self.app.get('/admin')
         self.assertEqual(resp.status_int, 302)
@@ -73,7 +77,51 @@ class Test_1_UI(unittest.TestCase):
 
         assert 'new value' not in resp, resp
 
-    def test_json(self):
+    def test_2_model(self):
+        # index
+        resp = self.app.get('/foo')
+        self.assertEqual(resp.status_int, 302)
+        assert '/' in resp.location, resp
+
+        ## Simple model
+        resp = self.app.get('/foo/')
+
+        # add page
+        resp.mustcontain('/foo/new')
+        resp = resp.click('New Foo')
+        resp.mustcontain('/foo')
+        form = resp.forms[0]
+        form['Foo--bar'] = 'value'
+        resp = form.submit()
+        assert resp.headers['location'] == 'http://localhost/foo/', resp
+
+        # model index
+        resp = resp.follow()
+        resp.mustcontain('<td>value</td>')
+        form = resp.forms[0]
+        resp = form.submit()
+
+        # edit page
+        form = resp.forms[0]
+        form['Foo-1-bar'] = 'new value'
+        #form['_method'] = 'PUT'
+        resp = form.submit()
+        resp = resp.follow()
+
+        # model index
+        resp.mustcontain('<td>new value</td>')
+
+        # delete
+        resp = self.app.get('/foo/')
+        resp.mustcontain('<td>new value</td>')
+        resp = resp.forms[1].submit()
+        resp = resp.follow()
+
+        assert 'new value' not in resp, resp
+
+
+
+    def test_3_json(self):
         # index
         response = self.app.get('/admin/json')
         response.mustcontain('{"models": {', '"Foo": "http://localhost/admin/Foo/json"')
@@ -100,6 +148,7 @@ class Test_1_UI(unittest.TestCase):
 
         # delete
         response = self.app.delete(str(data['item_url']))
+        self.assert_(response.json['id'] > 0)
 
 class Test_2_Security(Test_1_UI):
 
@@ -122,11 +171,14 @@ class Test_2_Security(Test_1_UI):
         resp = self.app.get('/admin/Bar', extra_environ={'REMOTE_USER': 'bar_manager'})
         self.assertEqual(resp.status_int, 200)
 
+    def test_2_model(self):
+        pass
+
 class Test_3_JQuery(Test_1_UI):
 
     config = os.path.join(dirname, 'jquery.ini')
 
-    def test_crud(self):
+    def test_1_crud(self):
         # index
         resp = self.app.get('/admin/')
         resp.mustcontain('/admin/Foo')
@@ -161,3 +213,5 @@ class Test_3_JQuery(Test_1_UI):
         resp = self.app.get('/admin/Foo')
         resp.mustcontain('jQuery')
 
+    def test_2_model(self):
+        pass

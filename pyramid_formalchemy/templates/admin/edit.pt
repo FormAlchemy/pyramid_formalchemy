@@ -4,7 +4,17 @@
       <form action="" method="POST" enctype="multipart/form-data">
         <div tal:content="structure fs.render()" />
         <input type="hidden" name="_method" value="PUT" />
-        <div metal:use-macro="main.macros['buttons']">
+        <div metal:define-macro="buttons">
+          <p class="fa_field">
+            <a class="ui-widget-header ui-widget-link ui-widget-button ui-corner-all" href="#">
+              <input type="submit" value="${F_('Save')}" />
+            </a>
+            <a class="ui-widget-header ui-widget-link ui-corner-all"
+               tal:attributes="href request.fa_url(request.model_name)">
+              <span class="ui-icon ui-icon-circle-arrow-w"></span>
+              ${F_('Cancel')}
+            </a>
+          </p>
         </div>
       </form>
     </div>
