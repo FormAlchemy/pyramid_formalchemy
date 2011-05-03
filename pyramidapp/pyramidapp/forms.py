@@ -15,3 +15,5 @@ GridMyModel = Grid(models.MyModel)
 GridMyModelReadOnly = Grid(models.MyModel)
 GridMyModelReadOnly.configure(readonly=True)
 
+FooEdit = FieldSet(models.Foo)
+FooEdit.configure()

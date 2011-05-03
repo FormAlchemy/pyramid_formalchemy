@@ -169,32 +169,20 @@ class ModelView(object):
         collection = options.pop('collection')
         return Page(collection, **options)
 
-    def get_fieldset(self, id=None):
+    def get_fieldset(self, suffix='', id=None):
         """return a ``FieldSet`` object bound to the correct record for ``id``.
         """
         request = self.request
         model = id and request.model_instance or request.model_class
-        if hasattr(request.forms, request.model_name):
-            fs = getattr(request.forms, request.model_name)
-            fs.engine = fs.engine or self.engine
-            return id and fs.bind(model) or fs
-        fs = self.fieldset_class(model)
+        form_name = request.model_name + suffix
+        fs = getattr(request.forms, form_name, None)
+        if fs is None:
+            fs = getattr(request.forms, request.model_name,
+                         self.fieldset_class)
+        if fs is self.fieldset_class:
+            fs = fs(request.model_class)
         fs.engine = fs.engine or self.engine
-        return fs
-
-    def get_add_fieldset(self):
-        """return a ``FieldSet`` used for add form.
-        """
-        request = self.request
-        if hasattr(request.forms, request.model_name + 'Add'):
-            fs = getattr(request.forms, request.model_name)
-            fs.engine = fs.engine or self.engine
-            return fs
-        fs = self.get_fieldset()
-        for field in fs.render_fields.itervalues():
-            if field.is_readonly():
-                del fs[field.name]
-        return fs
+        return id and fs.bind(model) or fs
 
     def get_grid(self):
         """return a Grid object"""
@@ -268,7 +256,7 @@ class ModelView(object):
 
     def create(self):
         request = self.request
-        fs = self.get_add_fieldset()
+        fs = self.get_fieldset(suffix='Add')
 
         if request.format == 'json' and request.method == 'PUT':
             data = json.load(request.body_file)
@@ -297,24 +285,24 @@ class ModelView(object):
 
     def show(self):
         id = self.request.model_id
-        fs = self.get_fieldset(id=id)
+        fs = self.get_fieldset(suffix='View', id=id)
         fs.readonly = True
         return self.render(fs=fs, action='show', id=id)
 
     def new(self, **kwargs):
-        fs = self.get_add_fieldset()
+        fs = self.get_fieldset(suffix='Add')
         fs = fs.bind(session=self.session)
         return self.render(fs=fs, action='new', id=None)
 
     def edit(self, id=None, **kwargs):
         id = self.request.model_id
-        fs = self.get_fieldset(id)
+        fs = self.get_fieldset(suffix='Edit', id=id)
         return self.render(fs=fs, action='edit', id=id)
 
     def update(self, **kwargs):
         request = self.request
         id = request.model_id
-        fs = self.get_fieldset(id)
+        fs = self.get_fieldset(suffix='Edit', id=id)
         fs = fs.bind(data=request.POST)
         if fs.validate():
             fs.sync()
