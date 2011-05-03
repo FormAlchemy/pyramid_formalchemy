@@ -12,6 +12,7 @@ class Base(object):
         self.request = request
         if hasattr(self, '__fa_route_name__'):
             request.session_factory = self.__session_factory__
+            request.query_factory = self.__query_factory__
             request.route_name = self.__fa_route_name__
             request.models = self.__models__
             request.forms = self.__forms__
@@ -112,6 +113,7 @@ class Model(Base):
 
     def __init__(self, request, name):
         Base.__init__(self, request, name)
-        request.model_instance = request.session_factory.query(request.model_class).get(name)
+        query = request.session_factory.query(request.model_class)
+        request.model_instance = request.query_factory(request, query, id=name)
         request.model_id = name
 

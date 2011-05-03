@@ -150,6 +150,19 @@ class Test_1_UI(unittest.TestCase):
         response = self.app.delete(str(data['item_url']))
         self.assert_(response.json['id'] > 0)
 
+    def test_4_xhr(self):
+        # add page
+        resp = self.app.post('/admin/Foo/', {'Foo--bar':'value'}, extra_environ={'HTTP_X_REQUESTED_WITH':'XMLHttpRequest'})
+        self.assertEqual(resp.content_type, 'text/plain')
+
+        resp = self.app.post('/admin/Foo/1', {'Foo-1-bar':'value'}, extra_environ={'HTTP_X_REQUESTED_WITH':'XMLHttpRequest'})
+        self.assertEqual(resp.content_type, 'text/plain')
+
+        # assume all are deleted
+        response = self.app.delete('/admin/Foo/1', extra_environ={'HTTP_X_REQUESTED_WITH':'XMLHttpRequest'})
+        self.assertEqual(resp.content_type, 'text/plain')
+
+
 class Test_2_Security(Test_1_UI):
 
     config = os.path.join(dirname, 'security.ini')

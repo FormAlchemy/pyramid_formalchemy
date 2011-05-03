@@ -7,6 +7,13 @@
 Welcome to pyramid_formalchemy's documentation!
 ===============================================
 
+About
+=====
+
+``pyramid_formalchemy`` provide a CRUD interface for ``pyramid`` based on ``FormAlchemy``
+
+It also allow to use ``FormAlchemy`` to render forms in your application.
+
 Installation
 ============
 
@@ -46,11 +53,11 @@ load ``package.models`` ``package.models.DBSession`` and ``package.forms`` but
 you can override this. In this case you don't need to specify a package::
 
 
-    pyramid_formalchemy.configure(config,
-                                  models='formalchemy_project.mymodels',
-                                  session_factory='formalchemy_project.session.Session',
-                                  forms='formalchemy_project',
-                                  use_jquery=True)
+    config.formalchemy_admin(config,
+                             models='formalchemy_project.mymodels',
+                             session_factory='formalchemy_project.session.Session',
+                             forms='formalchemy_project',
+                             use_jquery=True)
 
 You can also change the path ``prefix`` used. pyramid_formalchemy will use
 ``/admin/`` by default. See :func:`~pyramid_formalchemy.configure`.

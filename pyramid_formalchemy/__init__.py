@@ -10,16 +10,17 @@ def includeme(config):
 
 def formalchemy_model(config, route_name,
                       factory='pyramid_formalchemy.resources.ModelListing',
-                      view='pyramid_formalchemy.views.ModelView',
-                      package=None, model=None, forms=None, session_factory=None, **kwargs):
+                      view='pyramid_formalchemy.views.ModelView', model=None, **kwargs):
     model = config.maybe_dotted(model)
-    return formalchemy_admin(config, route_name, factory=factory, view=view, package=package,
-                             models=[model], model=model, forms=forms, session_factory=session_factory, **kwargs)
+    return formalchemy_admin(config, route_name, factory=factory,
+                             view=view, models=[model], model=model, **kwargs)
 
 def formalchemy_admin(config, route_name,
                       factory='pyramid_formalchemy.resources.Models',
                       view='pyramid_formalchemy.views.ModelView',
-                      package=None, models=None, forms=None, session_factory=None, **kwargs):
+                      package=None, models=None, forms=None,
+                      session_factory=None,
+                      query_factory=None, **kwargs):
     """configure formalchemy's admin interface"""
 
     route_name = route_name.strip('/')
@@ -41,11 +42,19 @@ def formalchemy_admin(config, route_name,
         if not session_factory:
             session_factory = config.maybe_dotted('%s.models.DBSession' % package)
 
+    if not query_factory:
+        def query_factory(request, query, id=None):
+            if id is not None:
+                return query.get(id)
+            else:
+                return query
+
     factory_args = {
         '__forms__': forms,
         '__models__': models,
         '__model_class__': kwargs.get('model'),
         '__session_factory__': session_factory,
+        '__query_factory__': staticmethod(query_factory),
         '__fa_route_name__': route_name,
         }
 

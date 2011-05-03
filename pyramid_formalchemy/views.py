@@ -3,7 +3,6 @@ from webhelpers.paginate import Page
 from sqlalchemy.orm import class_mapper
 from formalchemy.fields import _pk
 from formalchemy.fields import _stringify
-from formalchemy import Grid, FieldSet
 from formalchemy.i18n import get_translator
 from formalchemy.fields import Field
 from formalchemy import fatypes
@@ -45,21 +44,10 @@ class ModelView(object):
     def __init__(self, context, request):
         self.context = context
         self.request = request
+        self.session = request.session_factory
 
-        self.FieldSet = FieldSet
-        self.Grid = Grid
-
-    @property
-    def model_name(self):
-        """return ``model_name`` from ``pylons.routes_dict``"""
-        try:
-            return self.request.model_name
-        except AttributeError:
-            return None
-
-    def Session(self):
-        """return a Session object. You **must** override this."""
-        return self.request.session_factory
+        self.fieldset_class = request.forms.FieldSet
+        self.grid_class = request.forms.Grid
 
     def models(self, **kwargs):
         """Models index page"""
@@ -86,25 +74,16 @@ class ModelView(object):
                     if not isinstance(obj, type):
                         continue
                     models[key] = request.fa_url(key, request.format)
+        if kwargs.get('json'):
+            return models
         return self.render(models=models)
 
     def sync(self, fs, id=None):
-        """sync a record. If ``id`` is None add a new record else save current one.
-
-        Default is::
-
-            S = self.Session()
-            if id:
-                S.merge(fs.model)
-            else:
-                S.add(fs.model)
-            S.commit()
-        """
-        S = self.Session()
+        """sync a record. If ``id`` is None add a new record else save current one."""
         if id:
-            S.merge(fs.model)
+            self.session.merge(fs.model)
         else:
-            S.add(fs.model)
+            self.session.add(fs.model)
 
     def breadcrumb(self, fs=None, **kwargs):
         """return items to build the breadcrumb"""
@@ -113,7 +92,7 @@ class ModelView(object):
         model_name = request.model_name
         id = request.model_id
         items.append((request.fa_url(), 'root', 'root_url'))
-        if self.model_name:
+        if request.model_name:
             items.append((request.fa_url(model_name), model_name, 'model_url'))
         if id and hasattr(fs.model, '__unicode__'):
             items.append((request.fa_url(model_name, id), u'%s' % self.context.get_instance(), 'instance_url'))
@@ -132,7 +111,7 @@ class ModelView(object):
                 raise NotFound()
         kwargs.update(
                       main = get_renderer('pyramid_formalchemy:templates/admin/master.pt').implementation(),
-                      model_name=self.model_name,
+                      model_name=request.model_name,
                       breadcrumb=self.breadcrumb(**kwargs),
                       F_=get_translator().gettext)
         return kwargs
@@ -152,7 +131,7 @@ class ModelView(object):
             data = dict(fields=fields)
             pk = _pk(fs.model)
             if pk:
-                data['item_url'] = request.fa_url(self.model_name, 'json', pk)
+                data['item_url'] = request.fa_url(request.model_name, 'json', pk)
         else:
             data = {}
         data.update(kwargs)
@@ -174,24 +153,19 @@ class ModelView(object):
 
     def get_page(self, **kwargs):
         """return a ``webhelpers.paginate.Page`` used to display ``Grid``.
-
-        Default is::
-
-            S = self.Session()
-            query = S.query(self.context.get_model())
-            kwargs = request.environ.get('pylons.routes_dict', {})
-            return Page(query, page=int(request.GET.get('page', '1')), **kwargs)
         """
-        S = self.Session()
+        request = self.request
         def get_page_url(page, partial=None):
             url = "%s?page=%s" % (self.request.path, page)
             if partial:
                 url += "&partial=1"
             return url
-        options = dict(collection=S.query(self.context.get_model()),
-                       page=int(self.request.GET.get('page', '1')),
+        options = dict(page=int(request.GET.get('page', '1')),
                        url=get_page_url)
         options.update(kwargs)
+        if 'collection' not in options:
+            query = self.session.query(request.model_class)
+            options['collection'] = request.query_factory(request, query)
         collection = options.pop('collection')
         return Page(collection, **options)
 
@@ -200,43 +174,40 @@ class ModelView(object):
         """
         request = self.request
         model = id and request.model_instance or request.model_class
-        if request.forms and hasattr(request.forms, self.model_name):
-            fs = getattr(request.forms, self.model_name)
+        if hasattr(request.forms, request.model_name):
+            fs = getattr(request.forms, request.model_name)
             fs.engine = fs.engine or self.engine
             return id and fs.bind(model) or fs
-        fs = self.FieldSet(model)
+        fs = self.fieldset_class(model)
         fs.engine = fs.engine or self.engine
         return fs
 
     def get_add_fieldset(self):
         """return a ``FieldSet`` used for add form.
         """
+        request = self.request
+        if hasattr(request.forms, request.model_name + 'Add'):
+            fs = getattr(request.forms, request.model_name)
+            fs.engine = fs.engine or self.engine
+            return fs
         fs = self.get_fieldset()
         for field in fs.render_fields.itervalues():
             if field.is_readonly():
                 del fs[field.name]
         return fs
 
-    def get_grid(self, model_name=None):
-        """return a Grid object
-
-        Default is::
-
-            grid = self.Grid(self.context.get_model())
-            grid.engine = self.engine
-            self.update_grid(grid)
-            return grid
-        """
+    def get_grid(self):
+        """return a Grid object"""
         request = self.request
-        model_name = model_name or self.model_name
-        if request.forms and hasattr(request.forms, '%sGrid' % model_name):
+        model_name = request.model_name
+        if hasattr(request.forms, '%sGrid' % model_name):
             g = getattr(request.forms, '%sGrid' % model_name)
             g.engine = g.engine or self.engine
             g.readonly = True
             self.update_grid(g)
             return g
         model = self.context.get_model()
-        grid = self.Grid(model)
+        grid = self.grid_class(model)
         grid.engine = self.engine
         self.update_grid(grid)
         return grid
@@ -252,14 +223,14 @@ class ModelView(object):
                 <form action="%(url)s" method="GET" class="ui-grid-icon ui-widget-header ui-corner-all">
                 <input type="submit" class="ui-grid-icon ui-icon ui-icon-pencil" title="%(label)s" value="%(label)s" />
                 </form>
-                ''' % dict(url=self.request.fa_url(self.model_name, _pk(item), 'edit'),
+                ''' % dict(url=self.request.fa_url(self.request.model_name, _pk(item), 'edit'),
                             label=get_translator().gettext('edit'))
             def delete_link():
                 return lambda item: '''
                 <form action="%(url)s" method="POST" class="ui-grid-icon ui-state-error ui-corner-all">
                 <input type="submit" class="ui-icon ui-icon-circle-close" title="%(label)s" value="%(label)s" />
                 </form>
-                ''' % dict(url=self.request.fa_url(self.model_name, _pk(item), 'delete'),
+                ''' % dict(url=self.request.fa_url(self.request.model_name, _pk(item), 'delete'),
                            label=get_translator().gettext('delete'))
             grid.append(Field('edit', fatypes.String, edit_link()))
             grid.append(Field('delete', fatypes.String, delete_link()))
@@ -296,9 +267,7 @@ class ModelView(object):
         return self.render_grid(fs=fs, id=None, pager=pager)
 
     def create(self):
-        """REST api"""
         request = self.request
-        S = self.Session()
         fs = self.get_add_fieldset()
 
         if request.format == 'json' and request.method == 'PUT':
@@ -307,16 +276,16 @@ class ModelView(object):
             data = request.POST
 
         try:
-            fs = fs.bind(data=data, session=S)
-        except:
+            fs = fs.bind(data=data, session=self.session)
+        except Exception, e:
             # non SA forms
-            fs = fs.bind(self.context.get_model(), data=data, session=S)
+            fs = fs.bind(self.context.get_model(), data=data, session=self.session)
         if fs.validate():
             fs.sync()
             self.sync(fs)
-            S.flush()
-            if request.format == 'html':
-                if request.is_xhr:
+            self.session.flush()
+            if request.format in ('html', 'xhr'):
+                if request.is_xhr or request.format == 'xhr':
                     return Response(content_type='text/plain')
                 next = request.POST.get('next') or request.fa_url(request.model_name)
                 return exc.HTTPFound(
@@ -326,57 +295,34 @@ class ModelView(object):
                 return self.render(fs=fs)
         return self.render(fs=fs, action='new', id=None)
 
-    def delete(self, **kwargs):
-        """REST api"""
-        request = self.request
-        record = request.model_instance
-        if record:
-            S = self.Session()
-            S.delete(record)
-        if request.format == 'html':
-            if request.is_xhr:
-                response = Response()
-                response.content_type = 'text/plain'
-                return response
-            return exc.HTTPFound(location=request.fa_url(request.model_name))
-        return self.render(id=request.model_id)
-
     def show(self):
-        """REST api"""
         id = self.request.model_id
         fs = self.get_fieldset(id=id)
         fs.readonly = True
         return self.render(fs=fs, action='show', id=id)
 
     def new(self, **kwargs):
-        """REST api"""
         fs = self.get_add_fieldset()
-        fs = fs.bind(session=self.Session())
+        fs = fs.bind(session=self.session)
         return self.render(fs=fs, action='new', id=None)
 
     def edit(self, id=None, **kwargs):
-        """REST api"""
         id = self.request.model_id
         fs = self.get_fieldset(id)
         return self.render(fs=fs, action='edit', id=id)
 
     def update(self, **kwargs):
-        """REST api"""
         request = self.request
-        S = self.Session()
         id = request.model_id
         fs = self.get_fieldset(id)
-        if not request.POST:
-            raise ValueError(request.POST)
         fs = fs.bind(data=request.POST)
         if fs.validate():
             fs.sync()
             self.sync(fs, id)
-            S.flush()
-            if request.format == 'html':
-                if request.is_xhr:
-                    response.content_type = 'text/plain'
-                    return ''
+            self.session.flush()
+            if request.format in ('html', 'xhr'):
+                if request.is_xhr or request.format == 'xhr':
+                    return Response(content_type='text/plain')
                 return exc.HTTPFound(
                         location=request.fa_url(request.model_name, _pk(fs.model)))
             else:
@@ -385,4 +331,17 @@ class ModelView(object):
             return self.render(fs=fs, action='edit', id=id)
         else:
             return self.render(fs=fs, status=1)
+
+    def delete(self, **kwargs):
+        request = self.request
+        record = request.model_instance
+        if record:
+            self.session.delete(record)
+        else:
+            raise NotFound()
+        if request.format == 'html':
+            if request.is_xhr or request.format == 'xhr':
+                return Response(content_type='text/plain')
+            return exc.HTTPFound(location=request.fa_url(request.model_name))
+        return self.render(id=request.model_id)
 
