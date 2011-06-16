@@ -182,7 +182,9 @@ class ModelView(object):
         if fs is self.fieldset_class:
             fs = fs(request.model_class)
         fs.engine = fs.engine or self.engine
-        return id and fs.bind(model) or fs
+        fs = id and fs.bind(model) or fs
+        fs._request = request
+        return fs
 
     def get_grid(self):
         """return a Grid object"""
@@ -228,7 +230,7 @@ class ModelView(object):
         """listing page"""
         page = self.get_page(**kwargs)
         fs = self.get_grid()
-        fs = fs.bind(instances=page)
+        fs = fs.bind(instances=page, request=self.request)
         fs.readonly = True
         if self.request.format == 'json':
             values = []
@@ -264,10 +266,10 @@ class ModelView(object):
             data = request.POST
 
         try:
-            fs = fs.bind(data=data, session=self.session)
+            fs = fs.bind(data=data, session=self.session, request=request)
         except Exception, e:
             # non SA forms
-            fs = fs.bind(self.context.get_model(), data=data, session=self.session)
+            fs = fs.bind(self.context.get_model(), data=data, session=self.session, request=request)
         if fs.validate():
             fs.sync()
             self.sync(fs)
@@ -291,7 +293,7 @@ class ModelView(object):
 
     def new(self, **kwargs):
         fs = self.get_fieldset(suffix='Add')
-        fs = fs.bind(session=self.session)
+        fs = fs.bind(session=self.session, request=self.request)
         return self.render(fs=fs, action='new', id=None)
 
     def edit(self, id=None, **kwargs):
@@ -303,7 +305,7 @@ class ModelView(object):
         request = self.request
         id = request.model_id
         fs = self.get_fieldset(suffix='Edit', id=id)
-        fs = fs.bind(data=request.POST)
+        fs = fs.bind(request=request)
         if fs.validate():
             fs.sync()
             self.sync(fs, id)

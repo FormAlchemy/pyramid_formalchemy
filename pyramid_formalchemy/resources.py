@@ -41,7 +41,7 @@ class Base(object):
         elif hasattr(request.models, model_name):
             model_class = getattr(request.models, model_name)
         if model_class is None:
-            raise NotFound()
+            raise NotFound(request.path)
         request.model_class = model_class
         return model_class
 
@@ -50,10 +50,12 @@ class Base(object):
         session = self.request.session_factory()
         return session.query(model).get(self.request.model_id)
 
-    def _fa_url(self, *args):
+    def _fa_url(self, *args, **kwargs):
         matchdict = self.request.matchdict.copy()
         if 'traverse' in matchdict:
             del matchdict['traverse']
+        if kwargs:
+            matchdict['_query'] = kwargs
         return self.request.route_url(self.__fa_route_name__,
                                       traverse=tuple([str(a) for a in args]),
                                       **matchdict)
@@ -65,8 +67,8 @@ class Models(Base):
     def __init__(self, request):
         Base.__init__(self, request, None)
 
-    def fa_url(self, *args):
-        return self._fa_url(*args)
+    def fa_url(self, *args, **kwargs):
+        return self._fa_url(*args, **kwargs)
 
     def __getitem__(self, item):
         if item in ('json', 'xhr'):
@@ -93,8 +95,8 @@ class ModelListing(Base):
             # get permissions from SA class
             self.__acl__ = model.__acl__
 
-    def fa_url(self, *args):
-        return self._fa_url(*args[1:])
+    def fa_url(self, *args, **kwargs):
+        return self._fa_url(*args[1:], **kwargs)
 
     def __getitem__(self, item):
         if item in ('json', 'xhr'):
@@ -108,12 +110,14 @@ class ModelListing(Base):
 
 class Model(Base):
 
-    def fa_url(self, *args):
-        return self._fa_url(*args[2:])
+    def fa_url(self, *args, **kwargs):
+        return self._fa_url(*args[2:], **kwargs)
 
     def __init__(self, request, name):
         Base.__init__(self, request, name)
         query = request.session_factory.query(request.model_class)
         request.model_instance = request.query_factory(request, query, id=name)
+        if request.model_instance is None:
+            raise NotFound(request.path)
         request.model_id = name
 
