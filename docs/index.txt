@@ -17,13 +17,54 @@ It also allow to use ``FormAlchemy`` to render forms in your application.
 Installation
 ============
 
-With easy_install::
+pyramid_formalchemy must be a dependency of you application, so you
+must add "pyramid_formalchemy" as a dependency in your setup.py under
+install_requires. You must now update your environment, in case of
+buildout, by running a new buildout.
+
+pyramid_formalchemy also provides a paster template. It can be used to
+add a skeleton to an existing project or create a new project. If you
+create a new project, you must first install pyramid_formalchemy in
+your python environment, either with pip::
+
+  $ pip -i pyramid_formalchemy
+
+or with easy_install
 
   $ easy_install pyramid_formalchemy
 
-It's also highly recommended to install fa.jquery to get a nicer interface::
+Only after that, the paster templates become available.
+The template was made with the idea that it can be used to exist
+existing applications. It does not create an app for you. For
+bootstrapping your app, you need another paster template. The provided
+template works well with pyramid_alchemy, pyramid_routesalchemy and
+akhet. To bootstrap an application, call paster like that:
 
-  $ easy_install fa.jquery
+  $ paster create -t akhet -t pyramid_fa myapp
+
+The application is created by akhet, akhet does not know about
+pyramid_formalchemy, and pyramid_formalchemy cannot modify the app
+configuration. So you have to do this by hand. First, you must add the
+install dependency like explained earlier. Second, you must add the
+following line in the main method
+that returns the wsgi app, directly after Configurator has been
+created (The example assumes that the Configurator instance is stored
+under the name "config")::
+
+  ...
+  config.include(myapp.fainit)
+  ...
+
+More details are explained in fareadme.txt
+
+To add the minimum configuration to an existing application, you
+should be able to run::
+
+  $ paster create -t pyramid_fa myapp
+
+All files that paster creates are prefixed with fa, and should not
+interfere with existing code. The other customizations described for
+fresh applications are also valid for existing apps.
 
 Basic usage
 ============

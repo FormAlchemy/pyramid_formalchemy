@@ -1,4 +1,4 @@
-from {{package}} import models, forms
+from {{package}} import models, faforms
 
 def includeme(config):
     config.include('pyramid_formalchemy')
@@ -16,6 +16,6 @@ def includeme(config):
 
     config.formalchemy_admin("/admin",
                              models=models,
-                             forms=forms,
+                             forms=faforms,
                              session_factory=session_factory,
                              view="fa.jquery.pyramid.ModelView")
