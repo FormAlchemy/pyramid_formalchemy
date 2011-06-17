@@ -26,5 +26,9 @@ setup(name='pyramid_formalchemy',
       include_package_data=True,
       zip_safe=False,
       install_requires=requires,
+      entry_points = """
+[paste.paster_create_template]
+pyramid_fa = pyramid_formalchemy.paster:PyramidFormAlchemyTemplate
+"""
       )
 
