@@ -14,7 +14,7 @@ from sqlalchemy.orm import scoped_session
 from sqlalchemy.orm import sessionmaker
 
 from zope.sqlalchemy import ZopeTransactionExtension
-from pyramid.security import Allow, ALL_PERMISSIONS
+from pyramid.security import Allow, Authenticated, ALL_PERMISSIONS
 
 DBSession = scoped_session(sessionmaker(extension=ZopeTransactionExtension()))
 Base = declarative_base()
@@ -27,6 +27,12 @@ class MyModel(Base):
 
 class Foo(Base):
     __tablename__ = 'foo'
+    __acl__ = [
+            (Allow, 'admin', ALL_PERMISSIONS),
+            (Allow, Authenticated, 'view'),
+            (Allow, 'editor', 'edit'),
+            (Allow, 'manager', ('new', 'edit', 'delete')),
+        ]
     id = Column(Integer, primary_key=True)
     bar = Column(Unicode(255))
 
