@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import zope.component.event
+from zope.interface import alsoProvides
 from webhelpers.paginate import Page
 from sqlalchemy.orm import class_mapper
 from formalchemy.fields import _pk
@@ -12,7 +14,7 @@ from pyramid.security import has_permission
 from pyramid import httpexceptions as exc
 from pyramid.exceptions import NotFound
 from pyramid_formalchemy.utils import TemplateEngine
-import logging
+from pyramid_formalchemy import events
 
 try:
     from formalchemy.ext.couchdb import Document
@@ -88,6 +90,14 @@ class ModelView(object):
             self.session.merge(fs.model)
         else:
             self.session.add(fs.model)
+        event = events.AfterSyncEvent(fs.model, fs, self.request)
+        zope.component.event.objectEventNotify(event)
+
+    def validate(self, fs):
+        """validate fieldset"""
+        event = events.BeforeValidateEvent(fs.model, fs, self.request)
+        zope.component.event.objectEventNotify(event)
+        return fs.validate()
 
     def breadcrumb(self, fs=None, **kwargs):
         """return items to build the breadcrumb"""
@@ -113,6 +123,7 @@ class ModelView(object):
                 return meth(**kwargs)
             else:
                 raise NotFound()
+
         kwargs.update(
                       main = get_renderer('pyramid_formalchemy:templates/admin/master.pt').implementation(),
                       model_name=request.model_name,
@@ -271,10 +282,10 @@ class ModelView(object):
 
         try:
             fs = fs.bind(data=data, session=self.session, request=request)
-        except Exception, e:
+        except Exception:
             # non SA forms
             fs = fs.bind(self.context.get_model(), data=data, session=self.session, request=request)
-        if fs.validate():
+        if self.validate(fs):
             fs.sync()
             self.sync(fs)
             self.session.flush()
@@ -293,6 +304,11 @@ class ModelView(object):
         id = self.request.model_id
         fs = self.get_fieldset(suffix='View', id=id)
         fs.readonly = True
+
+        event = events.BeforeRenderEvent(self.request.model_instance, self.request, fs=fs)
+        alsoProvides(event, events.IBeforeShowRenderEvent)
+        zope.component.event.objectEventNotify(event)
+
         return self.render(fs=fs, action='show', id=id)
 
     def new(self, **kwargs):
@@ -303,6 +319,11 @@ class ModelView(object):
     def edit(self, id=None, **kwargs):
         id = self.request.model_id
         fs = self.get_fieldset(suffix='Edit', id=id)
+
+        event = events.BeforeRenderEvent(self.request.model_instance, self.request, fs=fs)
+        alsoProvides(event, events.IBeforeEditRenderEvent)
+        zope.component.event.objectEventNotify(event)
+
         return self.render(fs=fs, action='edit', id=id)
 
     def update(self, **kwargs):
@@ -310,7 +331,7 @@ class ModelView(object):
         id = request.model_id
         fs = self.get_fieldset(suffix='Edit', id=id)
         fs = fs.bind(request=request)
-        if fs.validate():
+        if self.validate(fs):
             fs.sync()
             self.sync(fs, id)
             self.session.flush()
@@ -329,10 +350,15 @@ class ModelView(object):
     def delete(self, **kwargs):
         request = self.request
         record = request.model_instance
+
+        event = events.BeforeDeleteEvent(record, self.request)
+        zope.component.event.objectEventNotify(event)
+
         if record:
             self.session.delete(record)
         else:
             raise NotFound()
+
         if request.format == 'html':
             if request.is_xhr or request.format == 'xhr':
                 return Response(content_type='text/plain')

@@ -2,6 +2,7 @@ from pyramid.config import Configurator
 from sqlalchemy import engine_from_config
 
 from pyramidapp.models import initialize_sql
+from pyramidapp import events; events #pyflakes
 
 def main(global_config, **settings):
     """ This function returns a Pyramid WSGI application.
