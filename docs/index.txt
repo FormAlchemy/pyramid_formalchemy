@@ -28,7 +28,7 @@ add a skeleton to an existing project or to create a new project. If you
 create a new project, you must first install pyramid_formalchemy in
 your python environment, either with pip::
 
-  $ pip -i pyramid_formalchemy
+  $ pip install pyramid_formalchemy
 
 or with easy_install::
 
