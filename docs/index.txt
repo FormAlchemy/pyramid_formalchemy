@@ -10,9 +10,9 @@ Welcome to pyramid_formalchemy's documentation!
 About
 =====
 
-``pyramid_formalchemy`` provide a CRUD interface for ``pyramid`` based on ``FormAlchemy``
+``pyramid_formalchemy`` provides a CRUD interface for ``pyramid`` based on ``FormAlchemy``
 
-It also allow to use ``FormAlchemy`` to render forms in your application.
+It also allows to use ``FormAlchemy`` to render forms in your application.
 
 Installation
 ============
@@ -20,25 +20,26 @@ Installation
 pyramid_formalchemy must be a dependency of you application, so you
 must add "pyramid_formalchemy" as a dependency in your setup.py under
 install_requires. You must now update your environment, in case of
-buildout, by running a new buildout.
+buildout, by running a new buildout. If you want nicer jquery
+functionality also add a dependency for ``fa.jquery``.
 
 pyramid_formalchemy also provides a paster template. It can be used to
-add a skeleton to an existing project or create a new project. If you
+add a skeleton to an existing project or to create a new project. If you
 create a new project, you must first install pyramid_formalchemy in
 your python environment, either with pip::
 
   $ pip -i pyramid_formalchemy
 
-or with easy_install
+or with easy_install::
 
   $ easy_install pyramid_formalchemy
 
-Only after that, the paster templates become available.
-The template was made with the idea that it can be used to exist
+Only after that, the paster template becomes available.
+The template was made with the idea that it can be used to extend
 existing applications. It does not create an app for you. For
 bootstrapping your app, you need another paster template. The provided
 template works well with pyramid_alchemy, pyramid_routesalchemy and
-akhet. To bootstrap an application, call paster like that:
+akhet. To bootstrap an application, call paster like that::
 
   $ paster create -t akhet -t pyramid_fa myapp
 
@@ -55,7 +56,9 @@ under the name "config")::
   config.include(myapp.fainit)
   ...
 
-More details are explained in fareadme.txt
+More details are explained in fareadme.txt.
+The process is the same for other templates. For the pyramid ones
+there are additional changes necessary that are also explained in fareadme.txt
 
 To add the minimum configuration to an existing application, you
 should be able to run::
@@ -71,14 +74,14 @@ Basic usage
 
 Add an empty ``forms.py`` module at the root of your project.
 
-Now you just need to include two line of configuration in the ``__init__.main()`` function of your project.
+Now you just need to include two lines of configuration in the ``__init__.main()`` function of your project.
 Here is the one used for testing:
 
 .. literalinclude:: ../pyramidapp/pyramidapp/__init__.py
 
 This will render the **basic** formalchemy interface.
 
-It's better to enable the jquery stuff like this:
+It's better to enable the jquery features like this:
 
 .. literalinclude:: ../pyramidapp/pyramidapp/jquery.py
    :pyobject: main
@@ -142,9 +145,9 @@ and per Model::
 Setting permissions
 ===================
 
-pyramid_formalchemy take care of some ``__acl__`` attributes.
+pyramid_formalchemy takes care of some ``__acl__`` attributes.
 
-Setting permissions for the globale interface
+Setting permissions for the global interface
 ---------------------------------------------
 
 You just need to subclass the default factory in your application:
