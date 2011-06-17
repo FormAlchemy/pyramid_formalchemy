@@ -1,0 +1,22 @@
+<html metal:use-macro="main.macros['master']">
+  <body>
+      <div metal:fill-slot="main">
+      Custom Foo view
+      <div tal:content="structure fs.render()" />
+      <div>
+        <p class="fa_field">
+          <a class="ui-widget-header ui-widget-link ui-widget-button ui-corner-all" href="#"
+             tal:attributes="href request.fa_url(request.model_name, request.model_id, 'edit')">
+              <input type="submit" value="${F_('Edit')}" />
+          </a>
+          <a class="ui-widget-header ui-widget-link ui-corner-all"
+             tal:attributes="href request.fa_url(request.model_name)">
+            <span class="ui-icon ui-icon-circle-arrow-w"></span>
+            ${F_('Back')}
+          </a>
+        </p>
+      </div>
+    </div>
+  </body>
+</html>
+
