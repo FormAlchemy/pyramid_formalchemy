@@ -7,6 +7,30 @@ def includeme(config):
     config.add_static_view('fa_admin', 'pyramid_formalchemy:static')
     config.add_directive('formalchemy_admin', 'pyramid_formalchemy.formalchemy_admin')
     config.add_directive('formalchemy_model', 'pyramid_formalchemy.formalchemy_model')
+    config.add_directive('formalchemy_model_view', 'pyramid_formalchemy.formalchemy_model_view')
+    config.registry.pyramid_formalchemy_views = {}
+
+def formalchemy_model_view(config, route_name,
+                           model=None,
+                           name='',
+                           view='pyramid_formalchemy.views.ModelView',
+                           context='pyramid_formalchemy.resources.Model', **kwargs):
+    """custom model view registration"""
+
+    model = config.maybe_dotted(model)
+    context = config.maybe_dotted(context)
+    mixin_name = '%sCustom%s_%s_%s' % (model.__name__, context.__name__,
+                                       route_name, kwargs.get('request_method','GET'))
+
+    factory = type(mixin_name, (context,), {})
+    config.registry.pyramid_formalchemy_views[factory.__name__] = factory
+
+    kw = dict(route_name=route_name, view=view)
+    kw.update(kwargs)
+
+    config.add_view(context=factory,
+                    name=name,
+                    **kw)
 
 def formalchemy_model(config, route_name,
                       factory='pyramid_formalchemy.resources.ModelListing',
