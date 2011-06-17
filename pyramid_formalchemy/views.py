@@ -15,6 +15,7 @@ from pyramid import httpexceptions as exc
 from pyramid.exceptions import NotFound
 from pyramid_formalchemy.utils import TemplateEngine
 from pyramid_formalchemy import events
+from pyramid_formalchemy import actions
 
 try:
     from formalchemy.ext.couchdb import Document
@@ -117,6 +118,8 @@ class ModelView(object):
     def render(self, **kwargs):
         """render the form as html or json"""
         request = self.request
+        if 'action' in kwargs and request.format != 'json':
+            kwargs['actions'] = getattr(actions, '%(action)s_actions' % kwargs)
         if request.format != 'html':
             meth = getattr(self, 'render_%s_format' % request.format, None)
             if meth is not None:
