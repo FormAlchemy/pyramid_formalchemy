@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from pyramid.exceptions import NotFound
+from sqlalchemy import exceptions as sqlalchemy_exceptions
 import logging
 
 log = logging.getLogger(__name__)
@@ -74,7 +75,14 @@ class Models(Base):
         if item in ('json', 'xhr'):
             self.request.format = item
             return self
-        model = ModelListing(self.request, item)
+
+        self.request.model_name = item
+        model_class = self.get_model()
+        mixin_name = '%sCustom%s_%s_%s' % (model_class.__name__, ModelListing.__name__,
+                                           self.request.route_name, self.request.method)
+        mixin = type(mixin_name, (ModelListing, ), {})
+        factory = self.request.registry.pyramid_formalchemy_views.get(mixin.__name__, mixin)
+        model = factory(self.request, item)
         model.__parent__ = self
         if hasattr(model, '__acl__'):
             # propagate permissions to parent
@@ -102,9 +110,15 @@ class ModelListing(Base):
         if item in ('json', 'xhr'):
             self.request.format = item
             return self
-        if item in ('new',):
+
+        mixin_name = '%sCustom%s_%s_%s' % (self.request.model_class.__name__, Model.__name__,
+                                           self.request.route_name, self.request.method)
+        mixin = type(str(mixin_name), (Model, ), {})
+        factory = self.request.registry.pyramid_formalchemy_views.get(mixin.__name__, mixin)
+        try:
+            model = factory(self.request, item)
+        except NotFound:
             raise KeyError()
-        model = Model(self.request, item)
         model.__parent__ = self
         return model
 
@@ -116,7 +130,13 @@ class Model(Base):
     def __init__(self, request, name):
         Base.__init__(self, request, name)
         query = request.session_factory.query(request.model_class)
-        request.model_instance = request.query_factory(request, query, id=name)
+        try:
+            request.model_instance = request.query_factory(request, query, id=name)
+        except sqlalchemy_exceptions.SQLAlchemyError, exc:
+            log.exception(exc)
+            request.session_factory().rollback()
+            raise NotFound(request.path)
+
         if request.model_instance is None:
             raise NotFound(request.path)
         request.model_id = name

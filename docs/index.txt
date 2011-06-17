@@ -53,7 +53,7 @@ Custom view, factory, forms
 
 In the toward examples we just pass a ``package`` parameter to
 :func:`~pyramid_formalchemy.configure`.  By default the function will try to
-load ``package.models`` ``package.models.DBSession`` and ``package.forms`` but
+load ``package.models``, ``package.models.DBSession`` and ``package.forms`` but
 you can override this. In this case you don't need to specify a package::
 
 
@@ -71,6 +71,32 @@ Having fun with the query_factory parameter
 
 .. literalinclude:: ../../formalchemy_project/__init__.py
    :pyobject: main
+
+Custom views per model 
+----------------------
+
+You can also register custom CRUD views per ModelListing::
+
+
+    config.formalchemy_model_view('admin',
+                                  model='pyramidapp.models.Foo',
+                                  context='pyramid_formalchemy.resources.ModelListing',
+                                  renderer='templates/foolisting.pt',
+                                  attr='listing',
+                                  request_method='GET',
+                                  permission='view')
+
+and per Model::
+
+
+    config.formalchemy_model_view('admin',
+                                  model='pyramidapp.models.Foo',
+                                  context='pyramid_formalchemy.resources.Model',
+                                  name='',
+                                  renderer='templates/fooshow.pt',
+                                  attr='show',
+                                  request_method='GET',
+                                  permission='view')
 
 Setting permissions
 ===================

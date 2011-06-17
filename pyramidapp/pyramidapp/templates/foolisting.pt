@@ -1,0 +1,16 @@
+<html metal:use-macro="main.macros['master']">
+  <body>
+      <div metal:fill-slot="main">
+      My Foo custom template
+      <div class="ui-pager" tal:content="structure pager" />
+      <table class="layout-grid" tal:content="structure fs.render()" />
+      <p> 
+        <a class="ui-widget-header ui-widget-link ui-corner-all"
+           tal:attributes="href request.fa_url(request.model_name, 'new')">
+            <span class="ui-icon ui-icon-circle-plus"></span>
+            ${F_('New')} ${model_name}
+        </a>
+      </p>
+    </div>
+  </body>
+</html>

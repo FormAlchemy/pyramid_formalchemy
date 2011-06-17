@@ -8,6 +8,7 @@ from formalchemy.fields import Field
 from formalchemy import fatypes
 from pyramid.renderers import get_renderer
 from pyramid.response import Response
+from pyramid.security import has_permission
 from pyramid import httpexceptions as exc
 from pyramid.exceptions import NotFound
 from pyramid_formalchemy.utils import TemplateEngine
@@ -55,15 +56,17 @@ class ModelView(object):
         models = {}
         if isinstance(request.models, list):
             for model in request.models:
-                key = model.__name__
-                models[key] = request.fa_url(key, request.format)
+                if has_permission('view', model, request):
+                    key = model.__name__
+                    models[key] = request.fa_url(key, request.format)
         else:
             for key, obj in request.models.__dict__.iteritems():
                 if not key.startswith('_'):
                     if Document is not None:
                         try:
                             if issubclass(obj, Document):
-                                models[key] = request.fa_url(key, request.format)
+                                if has_permission('view', obj, request):
+                                    models[key] = request.fa_url(key, request.format)
                                 continue
                         except:
                             pass
@@ -73,7 +76,8 @@ class ModelView(object):
                         continue
                     if not isinstance(obj, type):
                         continue
-                    models[key] = request.fa_url(key, request.format)
+                    if has_permission('view', obj, request):
+                        models[key] = request.fa_url(key, request.format)
         if kwargs.get('json'):
             return models
         return self.render(models=models)
@@ -123,7 +127,7 @@ class ModelView(object):
     def render_json_format(self, fs=None, **kwargs):
         request = self.request
         request.override_renderer = 'json'
-        if fs:
+        if fs is not None:
             try:
                 fields = fs.jsonify()
             except AttributeError:

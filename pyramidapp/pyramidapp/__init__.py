@@ -22,6 +22,25 @@ def main(global_config, **settings):
     # register an admin UI for a single model
     config.formalchemy_model('foo', package='pyramidapp', model='pyramidapp.models.Foo')
 
+    # register custom model listing
+    config.formalchemy_model_view('admin',
+                                  model='pyramidapp.models.Foo',
+                                  context='pyramid_formalchemy.resources.ModelListing',
+                                  renderer='templates/foolisting.pt',
+                                  attr='listing',
+                                  request_method='GET',
+                                  permission='view')
+
+    # register custom model view
+    config.formalchemy_model_view('admin',
+                                  model='pyramidapp.models.Foo',
+                                  context='pyramid_formalchemy.resources.Model',
+                                  name='',
+                                  renderer='templates/fooshow.pt',
+                                  attr='show',
+                                  request_method='GET',
+                                  permission='view')
+
     return config.make_wsgi_app()
 
 
