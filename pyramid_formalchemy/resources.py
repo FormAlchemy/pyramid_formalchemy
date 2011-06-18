@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from pyramid.exceptions import NotFound
+from pyramid_formalchemy import actions
 from sqlalchemy import exceptions as sqlalchemy_exceptions
 import logging
 
@@ -27,6 +28,12 @@ class Base(object):
             if self.__model_class__:
                 request.model_class = self.__model_class__
                 request.model_name = self.__model_class__.__name__
+            langs = request.registry.settings.get('available_languages', '')
+            if langs:
+                if isinstance(langs, basestring):
+                    langs = langs.split()
+                request.language_actions = actions.Languages(*langs)
+
 
     def get_model(self):
         request = self.request

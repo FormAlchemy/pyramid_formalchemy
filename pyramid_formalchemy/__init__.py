@@ -4,11 +4,14 @@ from pyramid_formalchemy.resources import Models
 
 def includeme(config):
     """include formalchemy's zcml"""
+    config.add_translation_dirs('formalchemy:i18n_resources/', 'pyramid_formalchemy:locale/')
     config.add_static_view('fa_admin', 'pyramid_formalchemy:static')
     config.add_directive('formalchemy_admin', 'pyramid_formalchemy.formalchemy_admin')
     config.add_directive('formalchemy_model', 'pyramid_formalchemy.formalchemy_model')
     config.add_directive('formalchemy_model_view', 'pyramid_formalchemy.formalchemy_model_view')
     config.registry.pyramid_formalchemy_views = {}
+
+    config.add_route('set_language', '/set_language', 'pyramid_formalchemy.views.set_language')
 
 def formalchemy_model_view(config, route_name,
                            model=None,

@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 from chameleon.zpt.template import PageTemplate
 from pyramid.util import DottedNameResolver
+from pyramid_formalchemy.i18n import TranslationString
+from pyramid_formalchemy.i18n import get_localizer
+from pyramid_formalchemy.i18n import _
 import functools
 
 def action(name=None):
@@ -29,16 +32,16 @@ class Action(object):
         >>> request = Request.blank('/')
 
         >>> class MyAction(Action):
-        ...     body = u'<a tal:attributes="%(attributes)s" tal:content="%(content)s"></a>'
+        ...     body = u'<a tal:attributes="%(attributes)s">${content}</a>'
 
-        >>> action = MyAction('myaction', content=repr('Click here'), 
+        >>> action = MyAction('myaction', content=_('Click here'), 
         ...                   attrs={'href': repr('#'), 'onclick': repr('$.click()')})
         >>> action.render(request)
         u'<a href="#" id="myaction" onclick="$.click()">Click here</a>'
 
     """
 
-    def __init__(self, id, action='', content="", attrs=None, **rcontext):
+    def __init__(self, id, content="", alt="", attrs=None, **rcontext):
         self.id = id
         self.attrs = attrs or {}
         self.rcontext = rcontext
@@ -46,8 +49,9 @@ class Action(object):
             self.attrs['id'] = repr(id)
         self.update()
         attributes = u';'.join([u'%s %s' % v for v in self.attrs.items()])
-        rcontext.update(attrs=self.attrs, attributes=attributes, id=id, content=content, action=action)
+        rcontext.update(attrs=self.attrs, attributes=attributes, id=id)
         body = self.body % self.rcontext
+        rcontext.update(content=content, alt=alt)
         self.template = PageTemplate(body)
 
     def update(self):
@@ -56,6 +60,17 @@ class Action(object):
     def render(self, request):
         rcontext = {'action': self, 'request': request}
         rcontext.update(self.rcontext)
+        localizer = get_localizer(request)
+        mapping = getattr(request, 'action_mapping', {})
+        if not mapping:
+            for k in ('model_name', 'model_id'):
+                mapping[k] = getattr(request, k, '')
+            request.action_mapping = mapping
+        for k in ('content', 'alt'):
+            v = rcontext[k]
+            if isinstance(v, TranslationString):
+                v = TranslationString(v, domain=v.domain, mapping=request.action_mapping)
+                rcontext[k] = localizer.translate(v)
         return self.template.render(**rcontext)
 
     def __repr__(self):
@@ -67,14 +82,30 @@ class Link(Action):
 
         >>> from webob import Request
         >>> request = Request.blank('/')
-        >>> action = Link('myaction', content='label',
+        >>> action = Link('myaction',
         ...               attrs={'href': 'request.application_url'},
-        ...               label='Click here')
+        ...               content=_('Click here'))
         >>> action.render(request)
         u'<a href="http://localhost" id="myaction">Click here</a>'
 
     """
-    body = u'<a tal:attributes="%(attributes)s" tal:content="%(content)s"></a>'
+    body = u'<a tal:attributes="%(attributes)s">${content}</a>'
+
+class ListItem(Action):
+    """
+    An action rendered as a link::
+
+        >>> from webob import Request
+        >>> request = Request.blank('/')
+        >>> action = ListItem('myaction',
+        ...               attrs={'href': 'request.application_url'},
+        ...               content=_('Click here'))
+        >>> action.render(request)
+        u'<li><a href="http://localhost" id="myaction">Click here</a></li>'
+
+    """
+    body = u'<li><a tal:attributes="%(attributes)s">${content}</a></li>'
+
 
 class Input(Action):
     """An action rendered as an input::
@@ -82,7 +113,7 @@ class Input(Action):
         >>> from webob import Request
         >>> request = Request.blank('/')
         >>> action = Input('myaction',
-        ...                value=repr('Click here'))
+        ...                value=_('Click here'))
         >>> action.render(request)
         u'<input type="submit" id="myaction" value="Myaction" />'
 
@@ -95,21 +126,21 @@ class Input(Action):
         if 'type' not in self.attrs:
             self.attrs['type'] = repr('submit')
 
-class UILink(Action):
+class UIButton(Action):
     """An action rendered as an jquery.ui aware link::
 
         >>> from webob import Request
         >>> request = Request.blank('/')
-        >>> action = UILink('myaction', icon='ui-icon-trash',
-        ...                 label="string:Click here")
+        >>> action = UIButton('myaction', icon='ui-icon-trash',
+        ...                 content=_("Click here"))
         >>> print action.render(request)
         <a class="ui-widget-header ui-widget-link ui-widget-button ui-corner-all " id="myaction">
           <span class="ui-icon ui-icon-trash"></span>
           Click here
         </a>
         
-        >>> action = UILink('myaction', icon='ui-icon-trash',
-        ...                 label="'Click here'", attrs={'onclick':'$(#link).click();'})
+        >>> action = UIButton('myaction', icon='ui-icon-trash',
+        ...                 content=_("Click here"), attrs={'onclick':'$(#link).click();'})
         >>> print action.render(request)
         <a class="ui-widget-header ui-widget-link ui-widget-button ui-corner-all " href="#" id="myaction" onclick="$(#link).click();">
           <span class="ui-icon ui-icon-trash"></span>
@@ -121,7 +152,7 @@ class UILink(Action):
 <a class="ui-widget-header ui-widget-link ui-widget-button ui-corner-all ${state}"
    tal:attributes="%(attributes)s">
   <span class="ui-icon ${icon}"></span>
-  <span tal:replace="%(label)s"></span>
+  ${content}
 </a>'''
     def update(self):
         if 'state' not in self.rcontext:
@@ -135,17 +166,18 @@ class UILink(Action):
 class Actions(list):
     """
         >>> actions = Actions('pyramid_formalchemy.actions.delete',
-        ...                   Link('link1', content=repr('A link'), attrs={'href':'request.application_url'}))
+        ...                   Link('link1', content=_('A link'), attrs={'href':'request.application_url'}))
         >>> actions
-        [<UILink delete>, <Link link1>]
+        [<UIButton delete>, <Link link1>]
 
         >>> from webob import Request
         >>> request = Request.blank('/')
-        >>> print actions.render(request) #doctest: +ELLIPSIS
+        >>> print actions.render(request) #doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
         <a class="ui-widget-header ...">
           <span class="ui-icon ui-icon-trash"></span>
           Delete
-        </a><a href="http://localhost" id="link1">A link</a>
+        </a>
+        <a href="http://localhost" id="link1">A link</a>
         
     """
 
@@ -154,44 +186,70 @@ class Actions(list):
         list.__init__(self, [res.maybe_resolve(a) for a in args])
 
     def render(self, request, **kwargs):
-        return u''.join([a.render(request, **kwargs) for a in self])
+        return u'\n'.join([a.render(request, **kwargs) for a in self])
 
+class Languages(Actions):
+    """
+        >>> langs = Languages('fr', 'en')
+        >>> langs
+        [<Link fr>, <Link en>]
+        >>> from webob import Request
+        >>> request = Request.blank('/')
+        >>> request.route_url = lambda name, _query: 'http://localhost/set_language?_LOCALE_=%(_LOCALE_)s' % _query
+        >>> print langs.render(request) #doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
+        <a href="http://localhost/set_language?_LOCALE_=fr" id="fr">fr</a>
+        <a href="http://localhost/set_language?_LOCALE_=en" id="en">en</a>
+        
+    """
 
-new = UILink(
+    def __init__(self, *args, **kwargs):
+        list.__init__(self)
+        klass=kwargs.get('class_', ListItem)
+        for l in args:
+            self.append(Link(id=l, content=_(l), attrs=dict(href="request.route_url('set_language', _query={'_LOCALE_': '%s'})" % l)))
+
+new = UIButton(
         id='new',
-        label='string:New ${request.model_name}',
+        content=_('New ${model_name}'),
         icon='ui-icon-circle-plus',
         attrs=dict(href="request.fa_url(request.model_name, 'new')"),
         )
 
 
-save = UILink(
+save = UIButton(
         id='save',
-        label='string:Save',
+        content=_('Save'),
         icon='ui-icon-check',
         attrs=dict(onclick="jQuery(this).parents('form').submit();"),
         )
 
-save_and_add_another = UILink(
+save_and_add_another = UIButton(
         id='save_and_add_another',
-        label='string:Save and add another',
+        content=_('Save and add another'),
         icon='ui-icon-check',
         attrs=dict(onclick=("var f = jQuery(this).parents('form');"
                             "jQuery('#next', f).val(window.location.href);"
                             "f.submit();")),
         )
 
-edit = UILink(
+edit = UIButton(
         id='edit',
-        label='string:Edit',
+        content=_('Edit'),
         icon='ui-icon-check',
         attrs=dict(href="request.fa_url(request.model_name, request.model_id, 'edit')"),
         )
 
-delete = UILink(
+back = UIButton(
+        id='back',
+        content=_('Back'),
+        icon='ui-icon-circle-arrow-w',
+        attrs=dict(href="request.fa_url(request.model_name)"),
+        )
+
+delete = UIButton(
         id='delete',
         views='edit',
-        label='string:Delete',
+        content=_('Delete'),
         state='ui-state-error',
         icon='ui-icon-trash',
         attrs=dict(onclick=("string:var f = jQuery(this).parents('form');"
@@ -199,10 +257,10 @@ delete = UILink(
                       "f.submit();")),
         )
 
-cancel = UILink(
+cancel = UIButton(
         id='cancel',
         views='edit',
-        label='string:Cancel',
+        content=_('Cancel'),
         icon='ui-icon-circle-arrow-w',
         attrs=dict(href="request.fa_url(request.model_name)"),
         )
@@ -210,6 +268,6 @@ cancel = UILink(
 defaults_actions = dict(
     listing_buttons=Actions(new),
     new_buttons=Actions(save, save_and_add_another, cancel),
-    show_buttons=Actions(edit, cancel),
+    show_buttons=Actions(edit, back),
     edit_buttons=Actions(save, delete, cancel),
 )
