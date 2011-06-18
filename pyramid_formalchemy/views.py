@@ -238,14 +238,14 @@ class ModelView(object):
                 <input type="submit" class="ui-grid-icon ui-icon ui-icon-pencil" title="%(label)s" value="%(label)s" />
                 </form>
                 ''' % dict(url=self.request.fa_url(self.request.model_name, _pk(item), 'edit'),
-                            label=get_translator().gettext('edit'))
+                            label=get_translator(request=self.request)('edit'))
             def delete_link():
                 return lambda item: '''
                 <form action="%(url)s" method="POST" class="ui-grid-icon ui-state-error ui-corner-all">
                 <input type="submit" class="ui-icon ui-icon-circle-close" title="%(label)s" value="%(label)s" />
                 </form>
                 ''' % dict(url=self.request.fa_url(self.request.model_name, _pk(item), 'delete'),
-                           label=get_translator().gettext('delete'))
+                           label=get_translator(request=self.request)('delete'))
             grid.append(Field('edit', fatypes.String, edit_link()))
             grid.append(Field('delete', fatypes.String, delete_link()))
             grid.readonly = True

@@ -2,14 +2,14 @@ registry = dict(version=0)
 def bind():
     from cPickle import loads as _loads
     _lookup_attr = _loads('cchameleon.core.codegen\nlookup_attr\np1\n.')
-    _attrs_4360482000 = _loads('(dp1\n.')
+    _attrs_4358089040 = _loads('(dp1\n.')
     _init_scope = _loads('cchameleon.core.utils\necontext\np1\n.')
     _re_amp = _loads("cre\n_compile\np1\n(S'&(?!([A-Za-z]+|#[0-9]+);)'\np2\nI0\ntRp3\n.")
+    _attrs_4358088464 = _loads('(dp1\n.')
     _init_stream = _loads('cchameleon.core.generation\ninitialize_stream\np1\n.')
+    _attrs_4358088656 = _loads('(dp1\n.')
     _init_default = _loads('cchameleon.core.generation\ninitialize_default\np1\n.')
-    _attrs_4360481744 = _loads('(dp1\n.')
-    _attrs_4360481872 = _loads('(dp1\n.')
-    _attrs_4360482128 = _loads('(dp1\n.')
+    _attrs_4358088848 = _loads('(dp1\n.')
     _init_tal = _loads('cchameleon.core.generation\ninitialize_tal\np1\n.')
     def render(econtext, rcontext=None):
         macros = econtext.get('macros')
@@ -31,7 +31,7 @@ def bind():
         def _callback_main(econtext, _repeat, _out=_out, _write=_write, _domain=_domain, **_ignored):
             if _repeat:
                 repeat.update(_repeat)
-            attrs = _attrs_4360481744
+            attrs = _attrs_4358088464
             u'models'
             _write(u'<div>\n      ')
             _tmp1 = econtext['models']
@@ -39,15 +39,15 @@ def bind():
             (_tmp1, _tmp2, ) = repeat.insert('item', _tmp1)
             for item in _tmp1:
                 _tmp2 = (_tmp2 - 1)
-                attrs = _attrs_4360481872
+                attrs = _attrs_4358088656
                 _write(u'<div>\n        ')
-                attrs = _attrs_4360482000
+                attrs = _attrs_4358088848
                 u"''"
                 _write(u'<div>\n          ')
                 _default.value = default = ''
                 u'item'
                 _content = item
-                attrs = _attrs_4360482128
+                attrs = _attrs_4358089040
                 u'request.route_url(request.route_name, traverse=item)'
                 _write(u'<a')
                 _tmp3 = _lookup_attr(econtext['request'], 'route_url')(_lookup_attr(econtext['request'], 'route_name'), traverse=item)

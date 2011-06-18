@@ -33,6 +33,8 @@ class Base(object):
                 if isinstance(langs, basestring):
                     langs = langs.split()
                 request.language_actions = actions.Languages(*langs)
+            else:
+                request.language_actions = actions.Actions()
 
 
     def get_model(self):

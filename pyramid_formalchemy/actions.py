@@ -192,21 +192,32 @@ class Languages(Actions):
     """
         >>> langs = Languages('fr', 'en')
         >>> langs
-        [<Link fr>, <Link en>]
+        [<ListItem fr>, <ListItem en>]
         >>> from webob import Request
         >>> request = Request.blank('/')
+        >>> request.cookies['_LOCALE_'] = 'fr'
         >>> request.route_url = lambda name, _query: 'http://localhost/set_language?_LOCALE_=%(_LOCALE_)s' % _query
         >>> print langs.render(request) #doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
-        <a href="http://localhost/set_language?_LOCALE_=fr" id="fr">fr</a>
-        <a href="http://localhost/set_language?_LOCALE_=en" id="en">en</a>
+        <li><a href="http://localhost/set_language?_LOCALE_=fr" id="fr" css="lang_fr lang_active">French</a></li>
+        <li><a href="http://localhost/set_language?_LOCALE_=en" id="en" css="lang_en ">English</a></li>
         
     """
+    translations = {
+            'fr': _('French'),
+            'en': _('English'),
+            }
 
     def __init__(self, *args, **kwargs):
         list.__init__(self)
         klass=kwargs.get('class_', ListItem)
         for l in args:
-            self.append(Link(id=l, content=_(l), attrs=dict(href="request.route_url('set_language', _query={'_LOCALE_': '%s'})" % l)))
+            self.append(
+                klass(id=l,
+                      content=self.translations.get(l, _(l)), attrs={
+                        'class':"string:lang_%s ${request.cookies.get('_LOCALE_') == '%s' and 'lang_active' or ''}" % (l, l),
+                        'href':"request.route_url('set_language', _query={'_LOCALE_': '%s'})" % l
+                      }
+                  ))
 
 new = UIButton(
         id='new',

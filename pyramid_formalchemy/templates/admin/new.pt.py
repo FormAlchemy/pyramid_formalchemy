@@ -4,16 +4,16 @@ def bind():
     _lookup_attr = _loads('cchameleon.core.codegen\nlookup_attr\np1\n.')
     _init_scope = _loads('cchameleon.core.utils\necontext\np1\n.')
     _re_amp = _loads("cre\n_compile\np1\n(S'&(?!([A-Za-z]+|#[0-9]+);)'\np2\nI0\ntRp3\n.")
-    _attrs_4358666896 = _loads("(dp1\nVtype\np2\nVsubmit\np3\nsVvalue\np4\nV${F_('Save')}\np5\ns.")
-    _attrs_4358666576 = _loads('(dp1\n.')
+    _attrs_4358301712 = _loads('(dp1\n.')
+    _attrs_4358301840 = _loads('(dp1\nVmethod\np2\nVPOST\np3\nsVenctype\np4\nVmultipart/form-data\np5\ns.')
     _init_stream = _loads('cchameleon.core.generation\ninitialize_stream\np1\n.')
-    _attrs_4358666640 = _loads('(dp1\nVclass\np2\nVfa_field\np3\ns.')
-    _attrs_4358666448 = _loads('(dp1\nVmethod\np2\nVPOST\np3\nsVenctype\np4\nVmultipart/form-data\np5\ns.')
+    _attrs_4358302288 = _loads("(dp1\nVtype\np2\nVsubmit\np3\nsVvalue\np4\nV${F_('Save')}\np5\ns.")
+    _attrs_4358302160 = _loads('(dp1\nVhref\np2\nV#\nsVclass\np3\nVui-widget-header ui-widget-link ui-widget-button ui-corner-all\np4\ns.')
     _init_default = _loads('cchameleon.core.generation\ninitialize_default\np1\n.')
-    _attrs_4358667024 = _loads('(dp1\nVclass\np2\nVui-icon ui-icon-circle-arrow-w\np3\ns.')
-    _attrs_4358666320 = _loads('(dp1\n.')
-    _attrs_4358666832 = _loads('(dp1\nVclass\np2\nVui-widget-header ui-widget-link ui-corner-all\np3\ns.')
-    _attrs_4358666768 = _loads('(dp1\nVhref\np2\nV#\nsVclass\np3\nVui-widget-header ui-widget-link ui-widget-button ui-corner-all\np4\ns.')
+    _attrs_4358302416 = _loads('(dp1\nVclass\np2\nVui-icon ui-icon-circle-arrow-w\np3\ns.')
+    _attrs_4358302032 = _loads('(dp1\nVclass\np2\nVfa_field\np3\ns.')
+    _attrs_4358302224 = _loads('(dp1\nVclass\np2\nVui-widget-header ui-widget-link ui-corner-all\np3\ns.')
+    _attrs_4358301968 = _loads('(dp1\n.')
     _init_tal = _loads('cchameleon.core.generation\ninitialize_tal\np1\n.')
     def render(econtext, rcontext=None):
         macros = econtext.get('macros')
@@ -35,9 +35,9 @@ def bind():
         def _callback_main(econtext, _repeat, _out=_out, _write=_write, _domain=_domain, **_ignored):
             if _repeat:
                 repeat.update(_repeat)
-            attrs = _attrs_4358666320
+            attrs = _attrs_4358301712
             _write(u'<div>\n      ')
-            attrs = _attrs_4358666448
+            attrs = _attrs_4358301840
             u'request.fa_url(request.model_name)'
             _write(u'<form method="POST" enctype="multipart/form-data"')
             _tmp1 = _lookup_attr(econtext['request'], 'fa_url')(_lookup_attr(econtext['request'], 'model_name'))
@@ -66,7 +66,7 @@ def bind():
             _default.value = default = ''
             u'fs.render()'
             _content = _lookup_attr(econtext['fs'], 'render')()
-            attrs = _attrs_4358666576
+            attrs = _attrs_4358301968
             u'_content'
             _write(u'<div>')
             _tmp1 = _content
@@ -85,11 +85,11 @@ def bind():
                     _tmp = str(_tmp)
                 _write(_tmp)
             _write(u'</div>\n        ')
-            attrs = _attrs_4358666640
+            attrs = _attrs_4358302032
             _write(u'<p class="fa_field">\n          ')
-            attrs = _attrs_4358666768
+            attrs = _attrs_4358302160
             _write(u'<a class="ui-widget-header ui-widget-link ui-widget-button ui-corner-all" href="#">\n            ')
-            attrs = _attrs_4358666896
+            attrs = _attrs_4358302288
             'join(value("F_(\'Save\')"),)'
             _write(u'<input type="submit"')
             _tmp1 = econtext['F_']('Save')
@@ -114,7 +114,7 @@ def bind():
                     _tmp1 = _tmp1.replace('"', '&quot;')
                 _write(((' value="' + _tmp1) + '"'))
             _write(u' />\n          </a>\n          ')
-            attrs = _attrs_4358666832
+            attrs = _attrs_4358302224
             u'request.fa_url(request.model_name)'
             _write(u'<a class="ui-widget-header ui-widget-link ui-corner-all"')
             _tmp1 = _lookup_attr(econtext['request'], 'fa_url')(_lookup_attr(econtext['request'], 'model_name'))
@@ -139,10 +139,10 @@ def bind():
                     _tmp1 = _tmp1.replace('"', '&quot;')
                 _write(((' href="' + _tmp1) + '"'))
             _write(u'>\n            ')
-            attrs = _attrs_4358667024
-            u"F_('Cancel')"
+            attrs = _attrs_4358302416
+            u"'Cancel'"
             _write(u'<span class="ui-icon ui-icon-circle-arrow-w"></span>\n            ')
-            _tmp1 = econtext['F_']('Cancel')
+            _tmp1 = 'Cancel'
             _tmp = _tmp1
             if (_tmp.__class__ not in (str, unicode, int, float, )):
                 try:
