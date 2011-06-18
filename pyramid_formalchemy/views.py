@@ -38,6 +38,11 @@ class Session(object):
     def commit(self):
         """commit transaction"""
 
+def set_language(request):
+    resp = exc.HTTPFound(location=request.referer or request.application_url)
+    resp.set_cookie('_LOCALE_', request.GET.get('_LOCALE_', 'en'))
+    return resp
+
 class ModelView(object):
     """A RESTful view bound to a model"""
 
@@ -132,7 +137,7 @@ class ModelView(object):
                       main = get_renderer('pyramid_formalchemy:templates/admin/master.pt').implementation(),
                       model_name=request.model_name,
                       breadcrumb=self.breadcrumb(**kwargs),
-                      F_=get_translator().gettext)
+                      F_=get_translator())
         return kwargs
 
     def render_grid(self, **kwargs):

@@ -6,7 +6,7 @@ here = os.path.abspath(os.path.dirname(__file__))
 README = open(os.path.join(here, 'README.txt')).read()
 CHANGES = open(os.path.join(here, 'CHANGES.txt')).read()
 
-requires = ['pyramid>=1.0', 'WebError', 'FormAlchemy>=1.3.8']
+requires = ['pyramid>=1.0', 'WebError', 'FormAlchemy>=1.3.8', 'Babel']
 
 setup(name='pyramid_formalchemy',
       version='0.3',
@@ -23,6 +23,10 @@ setup(name='pyramid_formalchemy',
       url='http://docs.formalchemy.org/pyramid_formalchemy/',
       keywords='web pyramid pylons formalchemy',
       packages=find_packages(exclude=['pyramidapp']),
+      message_extractors = { 'pyramid_formalchemy': [
+             ('*.py',   'lingua_python', None ),
+             ('templates/**.pt',   'lingua_xml', None ),
+             ]},
       include_package_data=True,
       zip_safe=False,
       install_requires=requires,
