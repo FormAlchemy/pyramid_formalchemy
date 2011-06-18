@@ -123,6 +123,7 @@ def formalchemy_admin(config, route_name,
                     request_method='GET',
                     permission='new',
                     **kw)
+
     config.add_view(context='pyramid_formalchemy.resources.ModelListing',
                     renderer='pyramid_formalchemy:templates/admin/new.pt',
                     attr='create',
@@ -137,6 +138,7 @@ def formalchemy_admin(config, route_name,
                     request_method='GET',
                     permission='edit',
                     **kw)
+
     config.add_view(context='pyramid_formalchemy.resources.Model',
                     renderer='pyramid_formalchemy:templates/admin/edit.pt',
                     name='edit',
@@ -144,6 +146,7 @@ def formalchemy_admin(config, route_name,
                     request_method='POST',
                     permission='edit',
                     **kw)
+
     config.add_view(context='pyramid_formalchemy.resources.Model',
                     renderer='json',
                     name='',
@@ -159,6 +162,7 @@ def formalchemy_admin(config, route_name,
                     request_method='POST',
                     permission='delete',
                     **kw)
+
     config.add_view(context='pyramid_formalchemy.resources.Model',
                     renderer='pyramid_formalchemy:templates/admin/edit.pt',
                     attr='delete',
@@ -172,5 +176,12 @@ def formalchemy_admin(config, route_name,
                     permission='view',
                     name='',
                     attr='show',
+                    **kw)
+
+    config.add_view(context='pyramid_formalchemy.resources.ModelListing',
+                    attr='autocomplete',
+                    name='autocomplete',
+                    request_method='GET',
+                    permission='view',
                     **kw)
 

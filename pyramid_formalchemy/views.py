@@ -395,3 +395,12 @@ class ModelView(object):
             return exc.HTTPFound(location=request.fa_url(request.model_name))
         return self.render(id=request.model_id)
 
+    def autocomplete(self, *args, **kwargs):
+        filter_term = "%s%%" % self.request.params.get('term')
+        filter_attr = getattr(self.request.model_class, self.request.params.get('filter_by'))
+        query = self.session.query(self.request.model_class.id, filter_attr).filter(filter_attr.ilike(filter_term))
+        items = self.request.query_factory(self.request, query)
+        return Response(json.dumps([{'label' : x[1],
+                                     'value' : x[0]} for x in items ]),
+                        content_type='text/plain')
+
