@@ -198,8 +198,8 @@ class Languages(Actions):
         >>> request.cookies['_LOCALE_'] = 'fr'
         >>> request.route_url = lambda name, _query: 'http://localhost/set_language?_LOCALE_=%(_LOCALE_)s' % _query
         >>> print langs.render(request) #doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
-        <li><a href="http://localhost/set_language?_LOCALE_=fr" id="fr" css="lang_fr lang_active">French</a></li>
-        <li><a href="http://localhost/set_language?_LOCALE_=en" id="en" css="lang_en ">English</a></li>
+        <li><a href="http://localhost/set_language?_LOCALE_=fr" class="lang_fr lang_active" id="lang_fr">French</a></li>
+        <li><a href="http://localhost/set_language?_LOCALE_=en" class="lang_en " id="lang_en">English</a></li>
         
     """
     translations = {
@@ -212,7 +212,7 @@ class Languages(Actions):
         klass=kwargs.get('class_', ListItem)
         for l in args:
             self.append(
-                klass(id=l,
+                klass(id='lang_%s' % l,
                       content=self.translations.get(l, _(l)), attrs={
                         'class':"string:lang_%s ${request.cookies.get('_LOCALE_') == '%s' and 'lang_active' or ''}" % (l, l),
                         'href':"request.route_url('set_language', _query={'_LOCALE_': '%s'})" % l
