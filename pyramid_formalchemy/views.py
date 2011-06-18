@@ -45,6 +45,9 @@ class ModelView(object):
     pager_args = dict(link_attr={'class': 'ui-pager-link ui-state-default ui-corner-all'},
                       curpage_attr={'class': 'ui-pager-curpage ui-state-highlight ui-corner-all'})
 
+    actions_categories = ('buttons',)
+    defaults_actions = actions.defaults_actions
+
     def __init__(self, context, request):
         self.context = context
         self.request = request
@@ -118,8 +121,6 @@ class ModelView(object):
     def render(self, **kwargs):
         """render the form as html or json"""
         request = self.request
-        if 'action' in kwargs and request.format != 'json':
-            kwargs['actions'] = getattr(actions, '%(action)s_actions' % kwargs)
         if request.format != 'html':
             meth = getattr(self, 'render_%s_format' % request.format, None)
             if meth is not None:
@@ -244,6 +245,7 @@ class ModelView(object):
             grid.append(Field('delete', fatypes.String, delete_link()))
             grid.readonly = True
 
+    @actions.action()
     def listing(self, **kwargs):
         """listing page"""
         page = self.get_page(**kwargs)
@@ -274,9 +276,37 @@ class ModelView(object):
             pager = kwargs.pop('pager')
         return self.render_grid(fs=fs, id=None, pager=pager)
 
+    @actions.action()
+    def show(self):
+        id = self.request.model_id
+        fs = self.get_fieldset(suffix='View', id=id)
+        fs.readonly = True
+
+        event = events.BeforeRenderEvent(self.request.model_instance, self.request, fs=fs)
+        alsoProvides(event, events.IBeforeShowRenderEvent)
+        zope.component.event.objectEventNotify(event)
+
+        return self.render(fs=fs, id=id)
+
+    @actions.action()
+    def new(self):
+        fs = self.get_fieldset(suffix='Add')
+        fs = fs.bind(session=self.session, request=self.request)
+
+        event = events.BeforeRenderEvent(fs.model, self.request, fs=fs)
+        alsoProvides(event, events.IBeforeEditRenderEvent)
+        zope.component.event.objectEventNotify(event)
+
+        return self.render(fs=fs, id=None)
+
+    @actions.action('new')
     def create(self):
         request = self.request
         fs = self.get_fieldset(suffix='Add')
+
+        event = events.BeforeRenderEvent(fs.model, self.request, fs=fs)
+        alsoProvides(event, events.IBeforeEditRenderEvent)
+        zope.component.event.objectEventNotify(event)
 
         if request.format == 'json' and request.method == 'PUT':
             data = json.load(request.body_file)
@@ -288,6 +318,7 @@ class ModelView(object):
         except Exception:
             # non SA forms
             fs = fs.bind(self.context.get_model(), data=data, session=self.session, request=request)
+
         if self.validate(fs):
             fs.sync()
             self.sync(fs)
@@ -301,25 +332,10 @@ class ModelView(object):
             else:
                 fs.rebind(fs.model, data=None)
                 return self.render(fs=fs)
-        return self.render(fs=fs, action='new', id=None)
+        return self.render(fs=fs, id=None)
 
-    def show(self):
-        id = self.request.model_id
-        fs = self.get_fieldset(suffix='View', id=id)
-        fs.readonly = True
-
-        event = events.BeforeRenderEvent(self.request.model_instance, self.request, fs=fs)
-        alsoProvides(event, events.IBeforeShowRenderEvent)
-        zope.component.event.objectEventNotify(event)
-
-        return self.render(fs=fs, action='show', id=id)
-
-    def new(self, **kwargs):
-        fs = self.get_fieldset(suffix='Add')
-        fs = fs.bind(session=self.session, request=self.request)
-        return self.render(fs=fs, action='new', id=None)
-
-    def edit(self, id=None, **kwargs):
+    @actions.action()
+    def edit(self):
         id = self.request.model_id
         fs = self.get_fieldset(suffix='Edit', id=id)
 
@@ -327,12 +343,18 @@ class ModelView(object):
         alsoProvides(event, events.IBeforeEditRenderEvent)
         zope.component.event.objectEventNotify(event)
 
-        return self.render(fs=fs, action='edit', id=id)
+        return self.render(fs=fs, id=id)
 
-    def update(self, **kwargs):
+    @actions.action('edit')
+    def update(self):
         request = self.request
         id = request.model_id
         fs = self.get_fieldset(suffix='Edit', id=id)
+
+        event = events.BeforeRenderEvent(self.request.model_instance, self.request, fs=fs)
+        alsoProvides(event, events.IBeforeEditRenderEvent)
+        zope.component.event.objectEventNotify(event)
+
         fs = fs.bind(request=request)
         if self.validate(fs):
             fs.sync()
@@ -346,11 +368,11 @@ class ModelView(object):
             else:
                 return self.render(fs=fs, status=0)
         if request.format == 'html':
-            return self.render(fs=fs, action='edit', id=id)
+            return self.render(fs=fs, id=id)
         else:
             return self.render(fs=fs, status=1)
 
-    def delete(self, **kwargs):
+    def delete(self):
         request = self.request
         record = request.model_instance
 
