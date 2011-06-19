@@ -6,7 +6,52 @@ from pyramid_formalchemy.i18n import get_localizer
 from pyramid_formalchemy.i18n import _
 import functools
 
+__doc__ = """
+pyramid_formalchemy provide a way to use some ``actions`` in your template.
+Action are basically links or input button.
+
+By default there is only one category ``buttons`` which are the forms buttons
+but you can add some categories like this::
+
+    >>> from pyramid_formalchemy.views import ModelView
+    >>> class MyView(ModelView)
+    ...     # keep default action categorie and add the custom_actions categorie
+    ...     actions_categories = ('buttons', 'custom_actions')
+    ...     # update the default actions for all models
+    ...     defaults_actions = actions_categories.defaults_actions.copy()
+    ...     defaults_actions.update(edit_custom_actions=myactions)
+
+Where ``myactions`` is an :class:`~pyramid_formalchemy.actions.Actions` instance
+
+You can also customize the actions per Model::
+
+    >>> class MyArticle(Base):
+    ...     edit_buttons = Actions()
+
+The available actions are:
+
+- listing
+
+- new
+
+- edit
+
+But you can add your own::
+
+    >>> from pyramid_formalchemy.views import ModelView
+    >>> from pyramid_formalchemy import actions
+    >>> class MyView(ModelView)
+    ...     actions.action()
+    ...     def extra(self):
+    ...         # do stuff
+    ...         return self.render(**kw)
+
+Then pyramid_formalchemy will try to load some ``extra_buttons`` actions.
+"""
+
 def action(name=None):
+    """A decorator use to add some actions to the request.
+    """
     def wrapper(func):
         action = name or func.__name__
         @functools.wraps(func)
@@ -26,7 +71,8 @@ def action(name=None):
 
 
 class Action(object):
-    """A model action is used to add some action in model views::
+    """A model action is used to add some action in model views. The content
+    and alt parameters should be a ``TranslationString``::
 
         >>> from webob import Request
         >>> request = Request.blank('/')
@@ -93,7 +139,7 @@ class Link(Action):
 
 class ListItem(Action):
     """
-    An action rendered as a link::
+    An action rendered as a link contained by a list item::
 
         >>> from webob import Request
         >>> request = Request.blank('/')
@@ -114,6 +160,9 @@ class Input(Action):
         >>> request = Request.blank('/')
         >>> action = Input('myaction',
         ...                value=_('Click here'))
+
+    Rendering::
+
         >>> action.render(request)
         u'<input type="submit" id="myaction" value="Myaction" />'
 
@@ -139,6 +188,8 @@ class UIButton(Action):
           Click here
         </a>
         
+    You can use javascript::
+
         >>> action = UIButton('myaction', icon='ui-icon-trash',
         ...                 content=_("Click here"), attrs={'onclick':'$(#link).click();'})
         >>> print action.render(request)
@@ -164,11 +215,14 @@ class UIButton(Action):
                 self.attrs['href'] = repr('#')
 
 class Actions(list):
-    """
+    """A action list::
+
         >>> actions = Actions('pyramid_formalchemy.actions.delete',
         ...                   Link('link1', content=_('A link'), attrs={'href':'request.application_url'}))
         >>> actions
         [<UIButton delete>, <Link link1>]
+
+    You must use a request to render them::
 
         >>> from webob import Request
         >>> request = Request.blank('/')
@@ -189,10 +243,14 @@ class Actions(list):
         return u'\n'.join([a.render(request, **kwargs) for a in self])
 
 class Languages(Actions):
-    """
+    """Languages actions::
+
         >>> langs = Languages('fr', 'en')
         >>> langs
         [<ListItem fr>, <ListItem en>]
+
+    It take care about the active language::
+
         >>> from webob import Request
         >>> request = Request.blank('/')
         >>> request.cookies['_LOCALE_'] = 'fr'

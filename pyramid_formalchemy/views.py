@@ -39,6 +39,7 @@ class Session(object):
         """commit transaction"""
 
 def set_language(request):
+    """Set the _LOCALE_ cookie used by ``pyramid``"""
     resp = exc.HTTPFound(location=request.referer or request.application_url)
     resp.set_cookie('_LOCALE_', request.GET.get('_LOCALE_', 'en'))
     return resp
