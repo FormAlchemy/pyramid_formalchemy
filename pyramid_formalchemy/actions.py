@@ -14,19 +14,27 @@ By default there is only one category ``buttons`` which are the forms buttons
 but you can add some categories like this::
 
     >>> from pyramid_formalchemy.views import ModelView
-    >>> class MyView(ModelView)
+    >>> from pyramid_formalchemy import actions
+
+    >>> class MyView(ModelView):
     ...     # keep default action categorie and add the custom_actions categorie
     ...     actions_categories = ('buttons', 'custom_actions')
     ...     # update the default actions for all models
-    ...     defaults_actions = actions_categories.defaults_actions.copy()
-    ...     defaults_actions.update(edit_custom_actions=myactions)
+    ...     defaults_actions = actions.defaults_actions.copy()
+    ...     defaults_actions.update(edit_custom_actions=Actions())
 
 Where ``myactions`` is an :class:`~pyramid_formalchemy.actions.Actions` instance
 
 You can also customize the actions per Model::
 
+
+    >>> from sqlalchemy import Column, Integer
+    >>> from sqlalchemy.ext.declarative import declarative_base
+    >>> Base = declarative_base()
     >>> class MyArticle(Base):
+    ...     __tablename__ = 'myarticles'
     ...     edit_buttons = Actions()
+    ...     id = Column(Integer, primary_key=True)
 
 The available actions are:
 
@@ -40,7 +48,7 @@ But you can add your own::
 
     >>> from pyramid_formalchemy.views import ModelView
     >>> from pyramid_formalchemy import actions
-    >>> class MyView(ModelView)
+    >>> class MyView(ModelView):
     ...     actions.action()
     ...     def extra(self):
     ...         # do stuff
@@ -234,20 +242,22 @@ class Actions(list):
         <a href="http://localhost" id="link1">A link</a>
         
     """
-
-    def __init__(self, *args):
+    tag = u''
+    def __init__(self, *args, **kwargs):
         res = DottedNameResolver('pyramid_formalchemy.actions')
         list.__init__(self, [res.maybe_resolve(a) for a in args])
 
     def render(self, request, **kwargs):
         return u'\n'.join([a.render(request, **kwargs) for a in self])
 
+
+
 class Languages(Actions):
     """Languages actions::
 
         >>> langs = Languages('fr', 'en')
         >>> langs
-        [<ListItem fr>, <ListItem en>]
+        [<ListItem lang_fr>, <ListItem lang_en>]
 
     It take care about the active language::
 

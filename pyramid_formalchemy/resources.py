@@ -7,6 +7,15 @@ import logging
 log = logging.getLogger(__name__)
 
 class Base(object):
+    """Base class used for all traversed class.
+    Allow to access to some useful attributes via request::
+
+    - model_class
+    - model_name
+    - model_instance
+    - model_id
+    - fa_url
+    """
 
     def __init__(self, request, name):
         self.__name__ = name
@@ -73,6 +82,7 @@ class Base(object):
 
 
 class Models(Base):
+    """Root of the CRUD interface"""
 
     def __init__(self, request):
         Base.__init__(self, request, None)
@@ -99,6 +109,7 @@ class Models(Base):
         return model
 
 class ModelListing(Base):
+    """Context used for model classes"""
 
     def __init__(self, request, name=None):
         Base.__init__(self, request, name)
@@ -132,6 +143,7 @@ class ModelListing(Base):
         return model
 
 class Model(Base):
+    """Context used for model instances"""
 
     def fa_url(self, *args, **kwargs):
         return self._fa_url(*args[2:], **kwargs)
