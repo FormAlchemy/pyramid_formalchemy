@@ -46,7 +46,7 @@ class Test_1_UI(unittest.TestCase):
 
         # add page
         resp.mustcontain('/admin/Foo/new')
-        resp = resp.click('New Foo')
+        resp = resp.click(linkid='new')
         resp.mustcontain('/admin/Foo"')
         form = resp.forms[0]
         form['Foo--bar'] = 'value'
@@ -88,7 +88,7 @@ class Test_1_UI(unittest.TestCase):
 
         # add page
         resp.mustcontain('/foo/new')
-        resp = resp.click('New Foo')
+        resp = resp.click(linkid='new')
         resp.mustcontain('/foo')
         form = resp.forms[0]
         form['Foo--bar'] = 'value'
@@ -183,6 +183,14 @@ class Test_2_Security(Test_1_UI):
 
         resp = self.app.get('/admin/Bar', extra_environ={'REMOTE_USER': 'bar_manager'})
         self.assertEqual(resp.status_int, 200)
+
+        resp = self.app.post('/admin/Bar', {'Bar--foo':'bar'}, extra_environ={'REMOTE_USER': 'bar_manager'})
+        resp = self.app.get('/admin/Bar/1/edit', extra_environ={'REMOTE_USER': 'admin'})
+        self.assertEqual(resp.status_int, 200)
+        resp.mustcontain('Delete')
+        resp = self.app.get('/admin/Bar/1/edit', extra_environ={'REMOTE_USER': 'bar_manager'})
+        self.assertEqual(resp.status_int, 200)
+        assert 'Delete' not in resp.body, resp.body
 
     def test_2_model(self):
         pass

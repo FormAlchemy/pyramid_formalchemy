@@ -1,24 +1,25 @@
 registry = dict(version=0)
 def bind():
     from cPickle import loads as _loads
+    _attrs_4353373456 = _loads('(dp1\nVrel\np2\nVstylesheet\np3\ns.')
     _lookup_attr = _loads('cchameleon.core.codegen\nlookup_attr\np1\n.')
     _init_scope = _loads('cchameleon.core.utils\necontext\np1\n.')
     _re_amp = _loads("cre\n_compile\np1\n(S'&(?!([A-Za-z]+|#[0-9]+);)'\np2\nI0\ntRp3\n.")
-    _attrs_4358968400 = _loads('(dp1\n.')
-    _attrs_4358849552 = _loads('(dp1\n.')
-    _attrs_4358967760 = _loads('(dp1\nVid\np2\nVheader\np3\nsVclass\np4\nVui-widget-header ui-corner-all\np5\ns.')
-    _attrs_4358720592 = _loads('(dp1\nVrel\np2\nVstylesheet\np3\ns.')
-    _attrs_4358967504 = _loads('(dp1\nVid\np2\nVcontent\np3\nsVclass\np4\nVui-admin ui-widget\np5\ns.')
-    _attrs_4358967888 = _loads('(dp1\nVclass\np2\nVbreadcrumb\np3\ns.')
+    _attrs_4353342480 = _loads('(dp1\n.')
+    _attrs_4345507344 = _loads('(dp1\nVid\np2\nVheader\np3\nsVclass\np4\nVui-widget-header ui-corner-all\np5\ns.')
+    _attrs_4353343184 = _loads('(dp1\nVclass\np2\nVbreadcrumb\np3\ns.')
+    _attrs_4353342544 = _loads('(dp1\n.')
+    _attrs_4353376016 = _loads('(dp1\n.')
     _init_stream = _loads('cchameleon.core.generation\ninitialize_stream\np1\n.')
-    _attrs_4358968272 = _loads('(dp1\n.')
-    _attrs_4358721104 = _loads('(dp1\n.')
-    _attrs_4358721040 = _loads('(dp1\n.')
+    _attrs_4353376144 = _loads('(dp1\n.')
+    _attrs_4353376208 = _loads('(dp1\n.')
+    _attrs_4353372432 = _loads('(dp1\nVsrc\np2\nVhttps://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js\np3\ns.')
     _init_default = _loads('cchameleon.core.generation\ninitialize_default\np1\n.')
-    _attrs_4358721232 = _loads('(dp1\n.')
-    _attrs_4358967696 = _loads('(dp1\n.')
+    _attrs_4353372560 = _loads('(dp1\nVid\np2\nVcontent\np3\nsVclass\np4\nVui-admin ui-widget\np5\ns.')
+    _attrs_4345507600 = _loads('(dp1\n.')
+    _attrs_4353342352 = _loads('(dp1\n.')
+    _attrs_4353413200 = _loads('(dp1\n.')
     _init_tal = _loads('cchameleon.core.generation\ninitialize_tal\np1\n.')
-    _attrs_4358967952 = _loads('(dp1\n.')
     def render(econtext, rcontext=None):
         macros = econtext.get('macros')
         _translate = econtext.get('_translate')
@@ -34,15 +35,15 @@ def bind():
         default = None
         u'None'
         _domain = None
-        attrs = _attrs_4358849552
+        attrs = _attrs_4353376016
         _write(u'<html>\n    ')
-        attrs = _attrs_4358721040
+        attrs = _attrs_4353376144
         u"''"
         _write(u'<head>\n      ')
         _default.value = default = ''
         u"request.model_name or 'root'"
         _content = (_lookup_attr(econtext['request'], 'model_name') or 'root')
-        attrs = _attrs_4358721104
+        attrs = _attrs_4353413200
         u'_content'
         _write(u'<title>')
         _tmp1 = _content
@@ -70,7 +71,7 @@ def bind():
                 _tmp = _tmp.replace('>', '&gt;')
             _write(_tmp)
         _write(u'</title>\n      ')
-        attrs = _attrs_4358720592
+        attrs = _attrs_4353373456
         u"request.static_url('pyramid_formalchemy:static/admin.css')"
         _write(u'<link rel="stylesheet"')
         _tmp1 = _lookup_attr(econtext['request'], 'static_url')('pyramid_formalchemy:static/admin.css')
@@ -94,14 +95,16 @@ def bind():
             if ('"' in _tmp1):
                 _tmp1 = _tmp1.replace('"', '&quot;')
             _write(((' href="' + _tmp1) + '"'))
-        _write(u'></link>\n    </head>\n    ')
-        attrs = _attrs_4358721232
+        _write(u'></link>\n      ')
+        attrs = _attrs_4353372432
+        _write(u'<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>\n    </head>\n    ')
+        attrs = _attrs_4353376208
         _write(u'<body>\n      ')
-        attrs = _attrs_4358967504
+        attrs = _attrs_4353372560
         _write(u'<div id="content" class="ui-admin ui-widget">\n        ')
-        attrs = _attrs_4358967760
+        attrs = _attrs_4345507344
         _write(u'<h1 id="header" class="ui-widget-header ui-corner-all">\n          ')
-        attrs = _attrs_4358967888
+        attrs = _attrs_4353343184
         u'breadcrumb'
         _write(u'<div class="breadcrumb">\n            ')
         _tmp1 = econtext['breadcrumb']
@@ -114,7 +117,7 @@ def bind():
             _default.value = default = ''
             u'item[1]'
             _content = item[1]
-            attrs = _attrs_4358968400
+            attrs = _attrs_4353342480
             u'item[0]'
             _write(u'<a')
             _tmp3 = item[0]
@@ -169,7 +172,7 @@ def bind():
             _tmp3 = not _lookup_attr(repeat.item, 'end')
             if _tmp3:
                 pass
-                attrs = _attrs_4358968272
+                attrs = _attrs_4353342544
                 _write(u'<span>/</span>')
             _write(u'\n            ')
             if (_tmp2 == 0):
@@ -180,7 +183,7 @@ def bind():
         _default.value = default = ''
         u"request.model_name or 'root'"
         _content = (_lookup_attr(econtext['request'], 'model_name') or 'root')
-        attrs = _attrs_4358967952
+        attrs = _attrs_4353342352
         u'_content'
         _write(u'<div>')
         _tmp1 = _content
@@ -240,7 +243,7 @@ def bind():
                     _write(_tmp)
         else:
             pass
-            attrs = _attrs_4358967696
+            attrs = _attrs_4345507600
             _write(u'<div>\n        </div>')
         _write(u'\n      </div>\n    </body>\n</html>')
         return

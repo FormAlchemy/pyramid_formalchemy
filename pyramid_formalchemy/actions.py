@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from chameleon.zpt.template import PageTemplate
 from pyramid.util import DottedNameResolver
+from pyramid.security import has_permission
 from pyramid_formalchemy.i18n import TranslationString
 from pyramid_formalchemy.i18n import get_localizer
 from pyramid_formalchemy.i18n import _
@@ -95,9 +96,10 @@ class Action(object):
 
     """
 
-    def __init__(self, id, content="", alt="", attrs=None, **rcontext):
+    def __init__(self, id, content="", alt="", permission=None, attrs=None, **rcontext):
         self.id = id
         self.attrs = attrs or {}
+        self.permission = permission
         self.rcontext = rcontext
         if 'id' not in self.attrs:
             self.attrs['id'] = repr(id)
@@ -275,7 +277,11 @@ class Actions(list):
         list.__init__(self, [res.maybe_resolve(a) for a in args])
 
     def render(self, request, **kwargs):
-        return self.sep.join([a.render(request, **kwargs) for a in self])
+        allowed_permissions = []
+        for a in self:
+            if a.permission is None or has_permission(a.permission, request.context, request):
+                allowed_permissions.append(a)
+        return self.sep.join([a.render(request, **kwargs) for a in allowed_permissions])
 
     def __add__(self, other):
         actions = list(self)+list(other)
@@ -317,7 +323,7 @@ class Languages(Actions):
             }
 
     def __init__(self, *args, **kwargs):
-        list.__init__(self)
+        Actions.__init__(self)
         klass=kwargs.get('class_', ListItem)
         for l in args:
             self.append(
@@ -331,6 +337,7 @@ class Languages(Actions):
 new = UIButton(
         id='new',
         content=_('New ${model_label}'),
+        permission='new',
         icon='ui-icon-circle-plus',
         attrs=dict(href="request.fa_url(request.model_name, 'new')"),
         )
@@ -339,6 +346,7 @@ new = UIButton(
 save = UIButton(
         id='save',
         content=_('Save'),
+        permission='edit',
         icon='ui-icon-check',
         attrs=dict(onclick="jQuery(this).parents('form').submit();"),
         )
@@ -346,6 +354,7 @@ save = UIButton(
 save_and_add_another = UIButton(
         id='save_and_add_another',
         content=_('Save and add another'),
+        permission='edit',
         icon='ui-icon-check',
         attrs=dict(onclick=("var f = jQuery(this).parents('form');"
                             "jQuery('#next', f).val(window.location.href);"
@@ -355,6 +364,7 @@ save_and_add_another = UIButton(
 edit = UIButton(
         id='edit',
         content=_('Edit'),
+        permission='edit',
         icon='ui-icon-check',
         attrs=dict(href="request.fa_url(request.model_name, request.model_id, 'edit')"),
         )
@@ -368,18 +378,17 @@ back = UIButton(
 
 delete = UIButton(
         id='delete',
-        views='edit',
         content=_('Delete'),
+        permission='delete',
         state='ui-state-error',
         icon='ui-icon-trash',
-        attrs=dict(onclick=("string:var f = jQuery(this).parents('form');"
+        attrs=dict(onclick=("var f = jQuery(this).parents('form');"
                       "f.attr('action', window.location.href.replace('/edit', '/delete'));"
                       "f.submit();")),
         )
 
 cancel = UIButton(
         id='cancel',
-        views='edit',
         content=_('Cancel'),
         icon='ui-icon-circle-arrow-w',
         attrs=dict(href="request.fa_url(request.model_name)"),

@@ -41,7 +41,7 @@ class Bar(Base):
     __tablename__ = 'bar'
     __acl__ = [
             (Allow, 'admin', ALL_PERMISSIONS),
-            (Allow, 'bar_manager', ('view', 'new', 'edit', 'delete')),
+            (Allow, 'bar_manager', ('view', 'new', 'edit')),
         ]
     id = Column(Integer, primary_key=True)
     foo = Column(Unicode(255))
