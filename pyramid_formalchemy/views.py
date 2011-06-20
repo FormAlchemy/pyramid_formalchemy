@@ -162,14 +162,12 @@ class ModelView(object):
         request = self.request
         request.override_renderer = 'json'
         if fs is not None:
-            try:
-                fields = fs.jsonify()
-            except AttributeError:
-                fields = dict([(field.renderer.name, field.model_value) for field in fs.render_fields.values()])
-            data = dict(fields=fields)
+            data = fs.to_dict(with_prefix=request.params.get('with_prefix', False))
             pk = _pk(fs.model)
             if pk:
-                data['item_url'] = request.fa_url(request.model_name, 'json', pk)
+                if 'id' not in data:
+                    data['id'] = pk
+                data['absolute_url'] = request.fa_url(request.model_name, 'json', pk)
         else:
             data = {}
         data.update(kwargs)
@@ -288,12 +286,12 @@ class ModelView(object):
                 pk = _pk(item)
                 fs._set_active(item)
                 value = dict(id=pk,
-                             item_url=request.fa_url(request.model_name, pk))
+                             absolute_url=request.fa_url(request.model_name, pk))
                 if 'jqgrid' in request.GET:
                     fields = [_stringify(field.render_readonly()) for field in fs.render_fields.values()]
                     value['cell'] = [pk] + fields
                 else:
-                    value.update(dict([(field.key, field.model_value) for field in fs.render_fields.values()]))
+                    value.update(fs.to_dict(with_prefix=bool(request.params.get('with_prefix'))))
                 values.append(value)
             return self.render_json_format(rows=values,
                                            records=len(values),
@@ -339,14 +337,22 @@ class ModelView(object):
 
         if request.format == 'json' and request.method == 'PUT':
             data = json.load(request.body_file)
+        elif request.content_type == 'application/json':
+            data = json.load(request.body_file)
         else:
             data = request.POST
 
-        try:
-            fs = fs.bind(data=data, session=self.session, request=request)
-        except Exception:
-            # non SA forms
-            fs = fs.bind(self.context.get_model(), data=data, session=self.session, request=request)
+        with_prefix = True
+        if request.format == 'json':
+            with_prefix = bool(request.params.get('with_prefix'))
+
+        fs = fs.bind(data=data, session=self.session, request=request, with_prefix=with_prefix)
+        #try:
+        #    fs = fs.bind(data=data, session=self.session, request=request, with_prefix=with_prefix)
+        #except Exception:
+        #    # non SA forms
+        #    fs = fs.bind(self.context.get_model(), data=data, session=self.session,
+        #                 request=request, with_prefix=with_prefix)
 
         if self.validate(fs):
             fs.sync()
@@ -384,7 +390,18 @@ class ModelView(object):
         alsoProvides(event, events.IBeforeEditRenderEvent)
         zope.component.event.objectEventNotify(event)
 
-        fs = fs.bind(request=request)
+        if request.format == 'json' and request.method == 'PUT':
+            data = json.load(request.body_file)
+        elif request.content_type == 'application/json':
+            data = json.load(request.body_file)
+        else:
+            data = request.POST
+
+        with_prefix = True
+        if request.format == 'json':
+            with_prefix = bool(request.params.get('with_prefix'))
+
+        fs = fs.bind(request=request, with_prefix=with_prefix)
         if self.validate(fs):
             fs.sync()
             self.sync(fs, id)

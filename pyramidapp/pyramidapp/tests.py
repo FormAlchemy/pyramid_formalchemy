@@ -130,27 +130,56 @@ class Test_1_UI(unittest.TestCase):
 
         # add page
         response = self.app.post('/admin/Foo/json',
-                                    {'Foo--bar': 'value'})
+                                    {'bar': 'value'})
 
         data = response.json
-        id = data['item_url'].split('/')[-1]
+        id = data['absolute_url'].split('/')[-1]
+
+        response.mustcontain('"bar": "value"')
+
+
+        # get data
+        response = self.app.get(str(data['absolute_url']))
+        response.mustcontain('"bar": "value"')
+
+        # edit page
+        response = self.app.post(str(data['absolute_url']), {'bar': 'new value'})
+        response.mustcontain('"bar": "new value"')
+
+        # delete
+        response = self.app.delete(str(data['absolute_url']))
+        self.assert_(response.json['id'] > 0)
+
+    def test_4_json_prefix(self):
+        # index
+        response = self.app.get('/admin/json')
+        response.mustcontain('{"models": {', '"Foo": "http://localhost/admin/Foo/json"')
+
+        ## Simple model
+
+        # add page
+        response = self.app.post('/admin/Foo/json?with_prefix=True',
+                                 {'Foo--bar': 'value', 'with_prefix': 'true'})
+
+        data = response.json
+        id = data['absolute_url'].split('/')[-1]
 
         response.mustcontain('"Foo-%s-bar": "value"' % id)
 
 
         # get data
-        response = self.app.get(str(data['item_url']))
+        response = self.app.get(str(data['absolute_url'])+'?with_prefix=True')
         response.mustcontain('"Foo-%s-bar": "value"' % id)
 
         # edit page
-        response = self.app.post(str(data['item_url']), {'Foo-%s-bar' % id: 'new value'})
+        response = self.app.post(str(data['absolute_url']+'?with_prefix=True'), {'Foo-%s-bar' % id: 'new value', 'with_prefix': 'true'})
         response.mustcontain('"Foo-%s-bar": "new value"' % id)
 
         # delete
-        response = self.app.delete(str(data['item_url']))
+        response = self.app.delete(str(data['absolute_url']+'?with_prefix=True'))
         self.assert_(response.json['id'] > 0)
 
-    def test_4_xhr(self):
+    def test_5_xhr(self):
         # add page
         resp = self.app.post('/admin/Foo/', {'Foo--bar':'value'}, extra_environ={'HTTP_X_REQUESTED_WITH':'XMLHttpRequest'})
         self.assertEqual(resp.content_type, 'text/plain')
@@ -194,6 +223,8 @@ class Test_2_Security(Test_1_UI):
 
     def test_2_model(self):
         pass
+
+
 
 class Test_3_JQuery(Test_1_UI):
 
