@@ -89,6 +89,18 @@ It's better to enable the jquery features like this:
 
 That's it. Now launch your app, browse ``/admin/`` and enjoy it !
 
+
+About Models
+=============
+
+Here is a typical model to use full features of pyramid_formalchemy. Notice
+that the fields are defined using :py:func:`formalchemy.Column`:
+
+.. literalinclude:: ../../formalchemy_project/models.py
+   :pyobject: User
+
+See also :mod:`pyramid_formalchemy.actions` to customize form buttons per model.
+
 Advanced usage
 ===============
 
