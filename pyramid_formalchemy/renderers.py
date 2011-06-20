@@ -13,10 +13,8 @@ def PyramidAutocompleteFieldRenderer(filter_by='id', renderer=fields.IntegerFiel
             self.field.render_opts['options'] = []
 
         def update_options(self, options, kwargs):
-            autocomplete_model = self.field.relation_type().__name__
-            route_url = self.request.route_url(self.request.route_name,
-                                               traverse=(autocomplete_model,'autocomplete'))
-            kwargs['source'] = route_url
+            kwargs['source'] = self.request.fa_url(
+                    self.field.relation_type().__name__, 'autocomplete')
 
         def render(self, **kwargs):
             filter_by = self.jq_options.get('filter_by')
