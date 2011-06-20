@@ -71,7 +71,7 @@ def action(name=None):
                     objects = getattr(request.model_class, attr, None)
                     if objects is None:
                         objects = self.defaults_actions.get(attr, Actions())
-                    setattr(request, key, objects)
+                    request.actions[key] = objects
                 request.action = func.__name__
             return func(self, *args, **kwargs)
         return wrapped
@@ -117,8 +117,8 @@ class Action(object):
         localizer = get_localizer(request)
         mapping = getattr(request, 'action_mapping', {})
         if not mapping:
-            for k in ('model_name', 'model_id'):
-                mapping[k] = getattr(request, k, '')
+            for k in ('model_name', 'model_label', 'model_id'):
+                mapping[k] = localizer.translate(getattr(request, k, ''))
             request.action_mapping = mapping
         for k in ('content', 'alt'):
             v = rcontext[k]
@@ -201,7 +201,7 @@ class Option(Action):
 
     def update(self):
         if 'value' not in self.attrs:
-            self.attrs['value'] = self.rcontext.get('value', self)
+            self.attrs['value'] = self.rcontext.get('value', None)
 
 class UIButton(Action):
     """An action rendered as an jquery.ui aware link::
@@ -270,20 +270,28 @@ class Actions(list):
     """
     tag = u''
     def __init__(self, *args, **kwargs):
+        self.sep = kwargs.get('sep', u'\n')
         res = DottedNameResolver('pyramid_formalchemy.actions')
         list.__init__(self, [res.maybe_resolve(a) for a in args])
 
     def render(self, request, **kwargs):
-        return u'\n'.join([a.render(request, **kwargs) for a in self])
+        return self.sep.join([a.render(request, **kwargs) for a in self])
 
     def __add__(self, other):
         actions = list(self)+list(other)
-        return self.__class__(*actions)
+        actions = self.__class__(*actions)
+        actions.sep = self.sep
+        return actions
 
     def __repr__(self):
         return '<%s %s>' % (self.__class__.__name__, list.__repr__(self))
 
+class RequestActions(dict):
+    """An action container used to store action in requests.
+    Return an empty Actions instance if actions are not found"""
 
+    def __getattr__(self, attr):
+        return self.get(attr, Actions()).render
 
 class Languages(Actions):
     """Languages actions::
@@ -322,7 +330,7 @@ class Languages(Actions):
 
 new = UIButton(
         id='new',
-        content=_('New ${model_name}'),
+        content=_('New ${model_label}'),
         icon='ui-icon-circle-plus',
         attrs=dict(href="request.fa_url(request.model_name, 'new')"),
         )

@@ -201,7 +201,7 @@ class Test_3_JQuery(Test_1_UI):
 
         # add page
         resp.mustcontain('/admin/Foo/new')
-        resp = resp.click('New Foo')
+        resp = resp.click(linkid='new')
         resp.mustcontain('/admin/Foo"')
         form = resp.forms[0]
         form['Foo--bar'] = 'value'

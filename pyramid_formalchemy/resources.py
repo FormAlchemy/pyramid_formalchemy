@@ -37,14 +37,12 @@ class Base(object):
             if self.__model_class__:
                 request.model_class = self.__model_class__
                 request.model_name = self.__model_class__.__name__
+            request.actions = actions.RequestActions()
             langs = request.registry.settings.get('available_languages', '')
             if langs:
                 if isinstance(langs, basestring):
                     langs = langs.split()
-                request.language_actions = actions.Languages(*langs)
-            else:
-                request.language_actions = actions.Actions()
-
+                request.actions['languages'] = actions.Languages(*langs)
 
     def get_model(self):
         request = self.request

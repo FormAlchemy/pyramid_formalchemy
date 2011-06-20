@@ -14,6 +14,7 @@ from pyramid.security import has_permission
 from pyramid import httpexceptions as exc
 from pyramid.exceptions import NotFound
 from pyramid_formalchemy.utils import TemplateEngine
+from pyramid_formalchemy.i18n import I18NModel
 from pyramid_formalchemy import events
 from pyramid_formalchemy import actions
 
@@ -65,12 +66,12 @@ class ModelView(object):
     def models(self, **kwargs):
         """Models index page"""
         request = self.request
-        models = {}
+        models = []
         if isinstance(request.models, list):
             for model in request.models:
                 if has_permission('view', model, request):
                     key = model.__name__
-                    models[key] = request.fa_url(key, request.format)
+                    models.append(model)
         else:
             for key, obj in request.models.__dict__.iteritems():
                 if not key.startswith('_'):
@@ -78,7 +79,7 @@ class ModelView(object):
                         try:
                             if issubclass(obj, Document):
                                 if has_permission('view', obj, request):
-                                    models[key] = request.fa_url(key, request.format)
+                                    models.append(obj)
                                 continue
                         except:
                             pass
@@ -89,10 +90,19 @@ class ModelView(object):
                     if not isinstance(obj, type):
                         continue
                     if has_permission('view', obj, request):
-                        models[key] = request.fa_url(key, request.format)
+                        models.append(obj)
+
+        results = {}
+        for m in models:
+            if request.format == 'html':
+                url = request.fa_url(m.__name__)
+            else:
+                url = request.fa_url(m.__name__, request.format)
+            results[I18NModel(m, request).plural] = url
+
         if kwargs.get('json'):
-            return models
-        return self.render(models=models)
+            return results
+        return self.render(models=results)
 
     def sync(self, fs, id=None):
         """sync a record. If ``id`` is None add a new record else save current one."""
@@ -134,10 +144,13 @@ class ModelView(object):
             else:
                 raise NotFound()
 
+        request.model_class = model_class = I18NModel(request.model_class, request)
         kwargs.update(
                       main = get_renderer('pyramid_formalchemy:templates/admin/master.pt').implementation(),
+                      model_class=model_class,
                       model_name=request.model_name,
                       breadcrumb=self.breadcrumb(**kwargs),
+                      actions=request.actions,
                       F_=get_translator())
         return kwargs
 
@@ -206,8 +219,11 @@ class ModelView(object):
                          self.fieldset_class)
         if fs is self.fieldset_class:
             fs = fs(request.model_class)
+            if not isinstance(request.forms, list):
+                # add default fieldset to form module eg: caching
+                setattr(request.forms, form_name, fs)
         fs.engine = fs.engine or self.engine
-        fs = id and fs.bind(model) or fs
+        fs = id and fs.bind(model) or fs.copy()
         fs._request = request
         return fs
 
@@ -215,15 +231,22 @@ class ModelView(object):
         """return a Grid object"""
         request = self.request
         model_name = request.model_name
-        if hasattr(request.forms, '%sGrid' % model_name):
-            g = getattr(request.forms, '%sGrid' % model_name)
+        form_name = '%sGrid' % model_name
+        if hasattr(request.forms, form_name):
+            g = getattr(request.forms, form_name)
             g.engine = g.engine or self.engine
             g.readonly = True
+            g._request = self.request
             self.update_grid(g)
             return g
         model = self.context.get_model()
         grid = self.grid_class(model)
         grid.engine = self.engine
+        if not isinstance(request.forms, list):
+            # add default grid to form module eg: caching
+            setattr(request.forms, form_name, grid)
+        grid = grid.copy()
+        grid._request = self.request
         self.update_grid(grid)
         return grid
 
