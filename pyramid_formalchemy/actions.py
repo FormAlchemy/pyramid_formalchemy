@@ -80,7 +80,7 @@ def action(name=None):
 
 class Action(object):
     """A model action is used to add some action in model views. The content
-    and alt parameters should be a ``TranslationString``::
+    and alt parameters should be a :py:class:`pyramid.i18n.TranslationString`::
 
         >>> from webob import Request
         >>> request = Request.blank('/')
@@ -167,21 +167,41 @@ class Input(Action):
         >>> from webob import Request
         >>> request = Request.blank('/')
         >>> action = Input('myaction',
-        ...                value=_('Click here'))
+        ...                content=_('Click here'))
 
     Rendering::
 
         >>> action.render(request)
-        u'<input type="submit" id="myaction" value="Myaction" />'
+        u'<input value="Click here" type="submit" id="myaction" />'
 
     """
-    body = u'<input tal:attributes="%(attributes)s" />'
+    body = u'<input tal:attributes="%(attributes)s" value="${content}"/>'
+
+    def update(self):
+        if 'type' not in self.attrs:
+            self.attrs['type'] = repr('submit')
+
+class Option(Action):
+    """An action rendered as a select option::
+
+        >>> from webob import Request
+        >>> request = Request.blank('/')
+        >>> action = Option('myaction',
+        ...                  value='request.application_url',
+        ...                  content=_('Click here'))
+
+    Rendering::
+
+        >>> action.render(request)
+        u'<option id="myaction" value="http://localhost">Click here</option>'
+
+    """
+
+    body = u'<option tal:attributes="%(attributes)s">${content}</option>'
 
     def update(self):
         if 'value' not in self.attrs:
-            self.attrs['value'] = repr(self.id.title())
-        if 'type' not in self.attrs:
-            self.attrs['type'] = repr('submit')
+            self.attrs['value'] = self.rcontext.get('value', self)
 
 class UIButton(Action):
     """An action rendered as an jquery.ui aware link::
@@ -223,7 +243,7 @@ class UIButton(Action):
                 self.attrs['href'] = repr('#')
 
 class Actions(list):
-    """A action list::
+    """A action list. Can contain :class:`pyramid_formalchemy.actions.Action` or a dotted name::
 
         >>> actions = Actions('pyramid_formalchemy.actions.delete',
         ...                   Link('link1', content=_('A link'), attrs={'href':'request.application_url'}))
@@ -240,6 +260,14 @@ class Actions(list):
           Delete
         </a>
         <a href="http://localhost" id="link1">A link</a>
+
+    You can add actions::
+
+        >>> new_actions = Actions('pyramid_formalchemy.actions.new') + actions
+        >>> new_actions
+        [<UIButton new>, <UIButton delete>, <Link link1>]
+        >>> isinstance(new_actions, Actions)
+        True
         
     """
     tag = u''
@@ -249,6 +277,10 @@ class Actions(list):
 
     def render(self, request, **kwargs):
         return u'\n'.join([a.render(request, **kwargs) for a in self])
+
+    def __add__(self, other):
+        actions = list(self)+list(other)
+        return self.__class__(*actions)
 
 
 
