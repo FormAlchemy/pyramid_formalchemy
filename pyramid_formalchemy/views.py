@@ -145,10 +145,14 @@ class ModelView(object):
                 raise NotFound()
 
         request.model_class = model_class = I18NModel(request.model_class, request)
+        request.model_label = model_label = model_class.label
+        request.model_plural = model_plural = model_class.plural
         kwargs.update(
                       main = get_renderer('pyramid_formalchemy:templates/admin/master.pt').implementation(),
                       model_class=model_class,
                       model_name=request.model_name,
+                      model_label=model_label,
+                      model_plural=model_plural,
                       breadcrumb=self.breadcrumb(**kwargs),
                       actions=request.actions,
                       F_=get_translator())
