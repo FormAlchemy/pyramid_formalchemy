@@ -248,7 +248,7 @@ class Actions(list):
         >>> actions = Actions('pyramid_formalchemy.actions.delete',
         ...                   Link('link1', content=_('A link'), attrs={'href':'request.application_url'}))
         >>> actions
-        [<UIButton delete>, <Link link1>]
+        <Actions [<UIButton delete>, <Link link1>]>
 
     You must use a request to render them::
 
@@ -265,9 +265,7 @@ class Actions(list):
 
         >>> new_actions = Actions('pyramid_formalchemy.actions.new') + actions
         >>> new_actions
-        [<UIButton new>, <UIButton delete>, <Link link1>]
-        >>> isinstance(new_actions, Actions)
-        True
+        <Actions [<UIButton new>, <UIButton delete>, <Link link1>]>
         
     """
     tag = u''
@@ -282,6 +280,9 @@ class Actions(list):
         actions = list(self)+list(other)
         return self.__class__(*actions)
 
+    def __repr__(self):
+        return '<%s %s>' % (self.__class__.__name__, list.__repr__(self))
+
 
 
 class Languages(Actions):
@@ -289,7 +290,7 @@ class Languages(Actions):
 
         >>> langs = Languages('fr', 'en')
         >>> langs
-        [<ListItem lang_fr>, <ListItem lang_en>]
+        <Languages [<ListItem lang_fr>, <ListItem lang_en>]>
 
     It take care about the active language::
 
