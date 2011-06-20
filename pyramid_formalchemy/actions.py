@@ -390,11 +390,12 @@ delete = UIButton(
 cancel = UIButton(
         id='cancel',
         content=_('Cancel'),
+        permission='view',
         icon='ui-icon-circle-arrow-w',
         attrs=dict(href="request.fa_url(request.model_name)"),
         )
 
-defaults_actions = dict(
+defaults_actions = RequestActions(
     listing_buttons=Actions(new),
     new_buttons=Actions(save, save_and_add_another, cancel),
     show_buttons=Actions(edit, back),
