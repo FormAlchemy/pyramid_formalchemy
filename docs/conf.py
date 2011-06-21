@@ -219,7 +219,7 @@ man_pages = [
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {
     'pyramid': ('http://docs.pylonsproject.org/projects/pyramid/1.0', None),
-    'formalchemy': ('../../formalchemy/docs/_build/html/', None),
+    'formalchemy': ('http://docs.formalchemy.org/formalchemy/', None),
   }
 
 html_theme = 'nature'
