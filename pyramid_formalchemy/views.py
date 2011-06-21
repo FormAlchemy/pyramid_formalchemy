@@ -144,9 +144,13 @@ class ModelView(object):
             else:
                 raise NotFound()
 
-        request.model_class = model_class = I18NModel(request.model_class, request)
-        request.model_label = model_label = model_class.label
-        request.model_plural = model_plural = model_class.plural
+        if request.model_class:
+            request.model_class = model_class = I18NModel(request.model_class, request)
+            request.model_label = model_label = model_class.label
+            request.model_plural = model_plural = model_class.plural
+        else:
+            model_class = request.model_class
+            model_label = model_plural = ''
         kwargs.update(
                       main = get_renderer('pyramid_formalchemy:templates/admin/master.pt').implementation(),
                       model_class=model_class,
