@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: pyramid_formalchemy 0.3\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2011-06-18 12:02+0200\n"
-"PO-Revision-Date: 2011-06-20 16:14+0200\n"
+"PO-Revision-Date: 2011-06-21 16:44+0200\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: fr <LL@li.org>\n"
 "Plural-Forms: nplurals=2; plural=(n > 1)\n"
@@ -18,39 +18,39 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 0.9.5\n"
 
-#: pyramid_formalchemy/actions.py:312
+#: pyramid_formalchemy/actions.py:321
 msgid "French"
 msgstr "Français"
 
-#: pyramid_formalchemy/actions.py:313
+#: pyramid_formalchemy/actions.py:322
 msgid "English"
 msgstr "Anglais"
 
-#: pyramid_formalchemy/actions.py:330
+#: pyramid_formalchemy/actions.py:339
 msgid "New ${model_label}"
 msgstr "Nouveau ${model_label}"
 
-#: pyramid_formalchemy/actions.py:338
+#: pyramid_formalchemy/actions.py:348
 msgid "Save"
 msgstr "Sauver"
 
-#: pyramid_formalchemy/actions.py:345
+#: pyramid_formalchemy/actions.py:356
 msgid "Save and add another"
 msgstr "Sauver et ajouter un autre"
 
-#: pyramid_formalchemy/actions.py:354
+#: pyramid_formalchemy/actions.py:366
 msgid "Edit"
 msgstr "Editer"
 
-#: pyramid_formalchemy/actions.py:361
+#: pyramid_formalchemy/actions.py:374
 msgid "Back"
 msgstr "Retour"
 
-#: pyramid_formalchemy/actions.py:369
+#: pyramid_formalchemy/actions.py:381
 msgid "Delete"
 msgstr "Supprimer"
 
-#: pyramid_formalchemy/actions.py:380
+#: pyramid_formalchemy/actions.py:392
 msgid "Cancel"
 msgstr "Annuler"
 
