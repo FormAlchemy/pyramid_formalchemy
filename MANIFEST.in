@@ -6,3 +6,5 @@ recursive-include pyramid_formalchemy *.js
 recursive-include pyramid_formalchemy *.gif
 recursive-include pyramid_formalchemy *.png
 recursive-include pyramid_formalchemy *.jpg
+recursive-include pyramid_formalchemy *.py_tmpl
+recursive-include pyramid_formalchemy *.txt
