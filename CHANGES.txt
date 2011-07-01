@@ -1,8 +1,11 @@
 0.4.1 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Fix documentation urls (gawel)
 
+- Adding fallback for missing model_class on request (gawel)
+
+- Adding missing templates to egg (ConceitedCode, do3cc)
 
 0.4 - aka CRUD Sprint (hosted by Red Turtle) release
 ----------------------------------------------------
