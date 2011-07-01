@@ -9,7 +9,7 @@ CHANGES = open(os.path.join(here, 'CHANGES.txt')).read()
 requires = ['pyramid>=1.0', 'WebError', 'FormAlchemy>=1.3.8', 'Babel']
 
 setup(name='pyramid_formalchemy',
-      version='0.4',
+      version='0.4.1dev',
       description='FormAlchemy plugins and helpers for Pyramid',
       long_description=README + '\n\nCHANGES\n=======\n\n' +  CHANGES,
       classifiers=[
@@ -29,7 +29,7 @@ setup(name='pyramid_formalchemy',
              ]},
       include_package_data=True,
       zip_safe=False,
-      setup_requires=("setuptools-git",),
+      setup_requires=("setuptools-git", "babel"),
       install_requires=requires,
       entry_points = """
         [paste.paster_create_template]
