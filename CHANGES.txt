@@ -1,4 +1,4 @@
-0.4.1 (unreleased)
+0.4.1 (2011-07-01)
 ------------------
 
 - Fix documentation urls (gawel)
