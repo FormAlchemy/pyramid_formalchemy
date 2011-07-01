@@ -29,6 +29,7 @@ setup(name='pyramid_formalchemy',
              ]},
       include_package_data=True,
       zip_safe=False,
+      setup_requires=("setuptools-git",),
       install_requires=requires,
       entry_points = """
         [paste.paster_create_template]
