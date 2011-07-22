@@ -69,7 +69,7 @@ class ModelView(object):
         models = []
         if isinstance(request.models, list):
             for model in request.models:
-                if has_permission('view', model, request):
+                if has_permission('view', model, request) or not hasattr(model, '__acl__'):
                     key = model.__name__
                     models.append(model)
         else:
@@ -78,7 +78,7 @@ class ModelView(object):
                     if Document is not None:
                         try:
                             if issubclass(obj, Document):
-                                if has_permission('view', obj, request):
+                                if has_permission('view', obj, request) or not hasattr(model, '__acl__'):
                                     models.append(obj)
                                 continue
                         except:
@@ -89,7 +89,7 @@ class ModelView(object):
                         continue
                     if not isinstance(obj, type):
                         continue
-                    if has_permission('view', obj, request):
+                    if has_permission('view', obj, request) or not hasattr(obj, '__acl__'):
                         models.append(obj)
 
         results = {}

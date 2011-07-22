@@ -1,0 +1,26 @@
+Metadata-Version: 1.0
+Name: setuptools-git
+Version: 0.4.2
+Summary: Setuptools revision control system plugin for Git
+Home-page: UNKNOWN
+Author: Yannick Gingras
+Author-email: ygingras@ygingras.net
+License: Public Domain
+Description: 
+        This is a plugin for setup tools that enables Git integration.  Once
+        installed, Setuptools can be told to include in a module distribution
+        all the files tracked by git.  This is an alternative to explicit
+        inclusion specifications with MANIFEST.in.
+        
+        This package was formerly known as gitlsfiles.  The name change is the
+        result of an effort by the setuptools plugin developers to provide a
+        uniform naming convention.
+Platform: UNKNOWN
+Classifier: Topic :: Software Development :: Version Control
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Developers
+Classifier: License :: Public Domain
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 2
+Classifier: Programming Language :: Python :: 3
