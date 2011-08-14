@@ -289,6 +289,9 @@ class Actions(list):
         actions.sep = self.sep
         return actions
 
+    def __nonzero__(self):
+        return bool(len(self))
+
     def __repr__(self):
         return '<%s %s>' % (self.__class__.__name__, list.__repr__(self))
 
@@ -297,7 +300,10 @@ class RequestActions(dict):
     Return an empty Actions instance if actions are not found"""
 
     def __getattr__(self, attr):
-        return self.get(attr, Actions()).render
+        actions = self.get(attr, Actions())
+        if actions:
+            return actions.render
+        return None
 
 class Languages(Actions):
     """Languages actions::
@@ -320,6 +326,7 @@ class Languages(Actions):
     translations = {
             'fr': _('French'),
             'en': _('English'),
+            'pt_BR': _('Brasilian'),
             }
 
     def __init__(self, *args, **kwargs):
@@ -333,6 +340,51 @@ class Languages(Actions):
                         'href':"request.route_url('set_language', _query={'_LOCALE_': '%s'})" % l
                       }
                   ))
+
+
+class Themes(Actions):
+    themes = (
+        'black_tie',
+        'blitzer',
+        'cupertino',
+        'dark_hive',
+        'dot_luv',
+        'eggplant',
+        'excite_bike',
+        'flick',
+        'hot_sneaks',
+        'humanity',
+        'le_frog',
+        'mint_choc',
+        'overcast',
+        'pepper_grinder',
+        'redmond',
+        'smoothness',
+        'south_street',
+        'start',
+        'sunny',
+        'swanky_purse',
+        'trontastic',
+        'ui_darkness',
+        'ui_lightness',
+        'vader',
+      )
+
+    def __init__(self, *args, **kwargs):
+        Actions.__init__(self)
+        klass=kwargs.get('class_', Option)
+        if len(args) == 1 and args[0] == '*':
+            args = self.themes
+        for theme in args:
+            label = theme.replace('_', ' ')
+            self.append(
+                klass(id='theme_%s' % theme,
+                      content=_(label), attrs={
+                        'selected':"string:${request.cookies.get('_THEME_') == '%s' and 'selected' or None}" % theme,
+                        'value':"request.route_url('set_theme', _query={'_THEME_': '%s'})" % theme
+                      }
+                  ))
+
 
 new = UIButton(
         id='new',
