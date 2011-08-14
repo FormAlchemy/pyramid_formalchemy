@@ -326,7 +326,7 @@ class Languages(Actions):
     translations = {
             'fr': _('French'),
             'en': _('English'),
-            'pt_BR': _('Brasilian'),
+            'pt_BR': _('Brazilian'),
             }
 
     def __init__(self, *args, **kwargs):
