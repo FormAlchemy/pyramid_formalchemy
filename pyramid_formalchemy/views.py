@@ -11,6 +11,7 @@ from formalchemy import fatypes
 from pyramid.renderers import get_renderer
 from pyramid.response import Response
 from pyramid.security import has_permission
+from pyramid.i18n import get_locale_name
 from pyramid import httpexceptions as exc
 from pyramid.exceptions import NotFound
 from pyramid_formalchemy.utils import TemplateEngine
@@ -45,6 +46,13 @@ def set_language(request):
     resp.set_cookie('_LOCALE_', request.GET.get('_LOCALE_', 'en'))
     return resp
 
+def set_theme(request):
+    """Set the _THEME_ cookie used by ``pyramid_formalchemy`` to get a
+    jquery.ui theme"""
+    resp = exc.HTTPFound(location=request.referer or request.application_url)
+    resp.set_cookie('_THEME_', request.GET.get('_THEME_', 'smoothness'))
+    return resp
+
 class ModelView(object):
     """A RESTful view bound to a model"""
 
@@ -62,6 +70,12 @@ class ModelView(object):
 
         self.fieldset_class = request.forms.FieldSet
         self.grid_class = request.forms.Grid
+        if '_LOCALE_' not in request.cookies:
+            locale = get_locale_name(request)
+            request.cookies['_LOCALE_'] = locale
+        if '_LOCALE_' not in request.cookies:
+            theme = request.registry.settings.get('default_theme_name', 'smoothness')
+            request.cookies['_LOCALE_'] = theme
 
     def models(self, **kwargs):
         """Models index page"""
@@ -151,6 +165,7 @@ class ModelView(object):
         else:
             model_class = request.model_class
             model_label = model_plural = ''
+        self.update_resources()
         kwargs.update(
                       main = get_renderer('pyramid_formalchemy:templates/admin/master.pt').implementation(),
                       model_class=model_class,
@@ -159,7 +174,7 @@ class ModelView(object):
                       model_plural=model_plural,
                       breadcrumb=self.breadcrumb(**kwargs),
                       actions=request.actions,
-                      F_=get_translator())
+                      F_=get_translator()),
         return kwargs
 
     def render_grid(self, **kwargs):
@@ -279,6 +294,10 @@ class ModelView(object):
             grid.append(Field('edit', fatypes.String, edit_link()))
             grid.append(Field('delete', fatypes.String, delete_link()))
             grid.readonly = True
+
+    def update_resources(self):
+        """A hook to add some fanstatic resources"""
+        pass
 
     @actions.action()
     def listing(self, **kwargs):

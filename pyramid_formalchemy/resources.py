@@ -43,6 +43,11 @@ class Base(object):
                 if isinstance(langs, basestring):
                     langs = langs.split()
                 request.actions['languages'] = actions.Languages(*langs)
+            themes = request.registry.settings.get('available_themes', '')
+            if themes:
+                if isinstance(themes, basestring):
+                    themes = themes.split()
+                request.actions['themes'] = actions.Themes(*themes)
 
     def get_model(self):
         request = self.request

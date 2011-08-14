@@ -6,7 +6,7 @@ here = os.path.abspath(os.path.dirname(__file__))
 README = open(os.path.join(here, 'README.txt')).read()
 CHANGES = open(os.path.join(here, 'CHANGES.txt')).read()
 
-requires = ['pyramid>=1.0', 'WebError', 'FormAlchemy>=1.3.8', 'Babel']
+requires = ['pyramid>=1.1', 'WebError', 'FormAlchemy>=1.3.8', 'Babel']
 
 setup(name='pyramid_formalchemy',
       version='0.4.2dev',

@@ -11,7 +11,10 @@ def includeme(config):
     config.add_directive('formalchemy_model_view', 'pyramid_formalchemy.formalchemy_model_view')
     config.registry.pyramid_formalchemy_views = {}
 
-    config.add_route('set_language', '/set_language', 'pyramid_formalchemy.views.set_language')
+    config.add_route('set_language', '/set_language')
+    config.add_view('pyramid_formalchemy.views.set_language', route_name='set_language')
+    config.add_route('set_theme', '/set_theme')
+    config.add_view('pyramid_formalchemy.views.set_theme', route_name='set_theme')
 
 def formalchemy_model_view(config, route_name,
                            model=None,
