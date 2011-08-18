@@ -21,6 +21,6 @@ class TemplateEngine(BaseTemplateEngine):
         kwargs.update(dict(
             fatypes=fatypes,
         ))
-        return literal(render(renderer, kwargs))
+        return literal(render(renderer, kwargs, request=kwargs.get('request')))
 
 config.engine = TemplateEngine()

@@ -13,6 +13,8 @@ def includeme(config):
 
     config.add_route('set_language', '/set_language')
     config.add_view('pyramid_formalchemy.views.set_language', route_name='set_language')
+    config.add_route('set_theme', '/set_theme')
+    config.add_view('pyramid_formalchemy.views.set_theme', route_name='set_theme')
 
 def formalchemy_model_view(config, route_name,
                            model=None,

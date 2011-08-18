@@ -2,6 +2,7 @@
     <head>
       <title tal:content="request.model_name or 'root'"></title>
       <link rel="stylesheet" tal:attributes="href request.static_url('pyramid_formalchemy:static/admin.css')"></link>
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>
     </head>
     <body>
       <div id="content" class="ui-admin ui-widget">

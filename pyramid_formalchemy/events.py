@@ -1,4 +1,18 @@
 import zope.component
+__doc__ = """
+Event subscription
+==================
+
+``pyramid_formalchemy`` provides four events: ``IBeforeValidateEvent``,
+``IAfterSyncEvent``, ``IBeforeDeleteEvent`` and ``IBeforeRenderEvent``.
+There are also two more specific render evnts: ``IBeforeShowRenderEvent``
+and ``IBeforeEditRenderEvent``. You can use ``pyramid_formalchemy.events.subscriber``
+decorator to subscribe:
+
+.. literalinclude:: ../../pyramidapp/pyramidapp/events.py
+
+"""
+
 
 class IBeforeValidateEvent(zope.component.interfaces.IObjectEvent):
     """A model will be validated"""

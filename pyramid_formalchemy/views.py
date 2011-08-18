@@ -11,9 +11,11 @@ from formalchemy import fatypes
 from pyramid.renderers import get_renderer
 from pyramid.response import Response
 from pyramid.security import has_permission
+from pyramid.i18n import get_locale_name
 from pyramid import httpexceptions as exc
 from pyramid.exceptions import NotFound
 from pyramid_formalchemy.utils import TemplateEngine
+from pyramid_formalchemy.i18n import I18NModel
 from pyramid_formalchemy import events
 from pyramid_formalchemy import actions
 
@@ -39,8 +41,16 @@ class Session(object):
         """commit transaction"""
 
 def set_language(request):
+    """Set the _LOCALE_ cookie used by ``pyramid``"""
     resp = exc.HTTPFound(location=request.referer or request.application_url)
     resp.set_cookie('_LOCALE_', request.GET.get('_LOCALE_', 'en'))
+    return resp
+
+def set_theme(request):
+    """Set the _THEME_ cookie used by ``pyramid_formalchemy`` to get a
+    jquery.ui theme"""
+    resp = exc.HTTPFound(location=request.referer or request.application_url)
+    resp.set_cookie('_THEME_', request.GET.get('_THEME_', 'smoothness'))
     return resp
 
 class ModelView(object):
@@ -60,24 +70,30 @@ class ModelView(object):
 
         self.fieldset_class = request.forms.FieldSet
         self.grid_class = request.forms.Grid
+        if '_LOCALE_' not in request.cookies:
+            locale = get_locale_name(request)
+            request.cookies['_LOCALE_'] = locale
+        if '_LOCALE_' not in request.cookies:
+            theme = request.registry.settings.get('default_theme_name', 'smoothness')
+            request.cookies['_LOCALE_'] = theme
 
     def models(self, **kwargs):
         """Models index page"""
         request = self.request
-        models = {}
+        models = []
         if isinstance(request.models, list):
             for model in request.models:
-                if has_permission('view', model, request):
+                if has_permission('view', model, request) or not hasattr(model, '__acl__'):
                     key = model.__name__
-                    models[key] = request.fa_url(key, request.format)
+                    models.append(model)
         else:
             for key, obj in request.models.__dict__.iteritems():
                 if not key.startswith('_'):
                     if Document is not None:
                         try:
                             if issubclass(obj, Document):
-                                if has_permission('view', obj, request):
-                                    models[key] = request.fa_url(key, request.format)
+                                if has_permission('view', obj, request) or not hasattr(model, '__acl__'):
+                                    models.append(obj)
                                 continue
                         except:
                             pass
@@ -87,11 +103,20 @@ class ModelView(object):
                         continue
                     if not isinstance(obj, type):
                         continue
-                    if has_permission('view', obj, request):
-                        models[key] = request.fa_url(key, request.format)
+                    if has_permission('view', obj, request) or not hasattr(obj, '__acl__'):
+                        models.append(obj)
+
+        results = {}
+        for m in models:
+            if request.format == 'html':
+                url = request.fa_url(m.__name__)
+            else:
+                url = request.fa_url(m.__name__, request.format)
+            results[I18NModel(m, request).plural] = url
+
         if kwargs.get('json'):
-            return models
-        return self.render(models=models)
+            return results
+        return self.render(models=results)
 
     def sync(self, fs, id=None):
         """sync a record. If ``id`` is None add a new record else save current one."""
@@ -133,11 +158,23 @@ class ModelView(object):
             else:
                 raise NotFound()
 
+        if request.model_class:
+            request.model_class = model_class = I18NModel(request.model_class, request)
+            request.model_label = model_label = model_class.label
+            request.model_plural = model_plural = model_class.plural
+        else:
+            model_class = request.model_class
+            model_label = model_plural = ''
+        self.update_resources()
         kwargs.update(
                       main = get_renderer('pyramid_formalchemy:templates/admin/master.pt').implementation(),
+                      model_class=model_class,
                       model_name=request.model_name,
+                      model_label=model_label,
+                      model_plural=model_plural,
                       breadcrumb=self.breadcrumb(**kwargs),
-                      F_=get_translator())
+                      actions=request.actions,
+                      F_=get_translator()),
         return kwargs
 
     def render_grid(self, **kwargs):
@@ -148,14 +185,12 @@ class ModelView(object):
         request = self.request
         request.override_renderer = 'json'
         if fs is not None:
-            try:
-                fields = fs.jsonify()
-            except AttributeError:
-                fields = dict([(field.renderer.name, field.model_value) for field in fs.render_fields.values()])
-            data = dict(fields=fields)
+            data = fs.to_dict(with_prefix=request.params.get('with_prefix', False))
             pk = _pk(fs.model)
             if pk:
-                data['item_url'] = request.fa_url(request.model_name, 'json', pk)
+                if 'id' not in data:
+                    data['id'] = pk
+                data['absolute_url'] = request.fa_url(request.model_name, 'json', pk)
         else:
             data = {}
         data.update(kwargs)
@@ -205,8 +240,11 @@ class ModelView(object):
                          self.fieldset_class)
         if fs is self.fieldset_class:
             fs = fs(request.model_class)
+            if not isinstance(request.forms, list):
+                # add default fieldset to form module eg: caching
+                setattr(request.forms, form_name, fs)
         fs.engine = fs.engine or self.engine
-        fs = id and fs.bind(model) or fs
+        fs = id and fs.bind(model) or fs.copy()
         fs._request = request
         return fs
 
@@ -214,15 +252,22 @@ class ModelView(object):
         """return a Grid object"""
         request = self.request
         model_name = request.model_name
-        if hasattr(request.forms, '%sGrid' % model_name):
-            g = getattr(request.forms, '%sGrid' % model_name)
+        form_name = '%sGrid' % model_name
+        if hasattr(request.forms, form_name):
+            g = getattr(request.forms, form_name)
             g.engine = g.engine or self.engine
             g.readonly = True
+            g._request = self.request
             self.update_grid(g)
             return g
         model = self.context.get_model()
         grid = self.grid_class(model)
         grid.engine = self.engine
+        if not isinstance(request.forms, list):
+            # add default grid to form module eg: caching
+            setattr(request.forms, form_name, grid)
+        grid = grid.copy()
+        grid._request = self.request
         self.update_grid(grid)
         return grid
 
@@ -250,6 +295,10 @@ class ModelView(object):
             grid.append(Field('delete', fatypes.String, delete_link()))
             grid.readonly = True
 
+    def update_resources(self):
+        """A hook to add some fanstatic resources"""
+        pass
+
     @actions.action()
     def listing(self, **kwargs):
         """listing page"""
@@ -264,12 +313,12 @@ class ModelView(object):
                 pk = _pk(item)
                 fs._set_active(item)
                 value = dict(id=pk,
-                             item_url=request.fa_url(request.model_name, pk))
+                             absolute_url=request.fa_url(request.model_name, pk))
                 if 'jqgrid' in request.GET:
                     fields = [_stringify(field.render_readonly()) for field in fs.render_fields.values()]
                     value['cell'] = [pk] + fields
                 else:
-                    value.update(dict([(field.key, field.model_value) for field in fs.render_fields.values()]))
+                    value.update(fs.to_dict(with_prefix=bool(request.params.get('with_prefix'))))
                 values.append(value)
             return self.render_json_format(rows=values,
                                            records=len(values),
@@ -315,14 +364,22 @@ class ModelView(object):
 
         if request.format == 'json' and request.method == 'PUT':
             data = json.load(request.body_file)
+        elif request.content_type == 'application/json':
+            data = json.load(request.body_file)
         else:
             data = request.POST
 
-        try:
-            fs = fs.bind(data=data, session=self.session, request=request)
-        except Exception:
-            # non SA forms
-            fs = fs.bind(self.context.get_model(), data=data, session=self.session, request=request)
+        with_prefix = True
+        if request.format == 'json':
+            with_prefix = bool(request.params.get('with_prefix'))
+
+        fs = fs.bind(data=data, session=self.session, request=request, with_prefix=with_prefix)
+        #try:
+        #    fs = fs.bind(data=data, session=self.session, request=request, with_prefix=with_prefix)
+        #except Exception:
+        #    # non SA forms
+        #    fs = fs.bind(self.context.get_model(), data=data, session=self.session,
+        #                 request=request, with_prefix=with_prefix)
 
         if self.validate(fs):
             fs.sync()
@@ -360,7 +417,18 @@ class ModelView(object):
         alsoProvides(event, events.IBeforeEditRenderEvent)
         zope.component.event.objectEventNotify(event)
 
-        fs = fs.bind(request=request)
+        if request.format == 'json' and request.method == 'PUT':
+            data = json.load(request.body_file)
+        elif request.content_type == 'application/json':
+            data = json.load(request.body_file)
+        else:
+            data = request.POST
+
+        with_prefix = True
+        if request.format == 'json':
+            with_prefix = bool(request.params.get('with_prefix'))
+
+        fs = fs.bind(request=request, with_prefix=with_prefix)
         if self.validate(fs):
             fs.sync()
             self.sync(fs, id)

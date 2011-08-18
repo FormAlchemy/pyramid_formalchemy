@@ -5,15 +5,7 @@
             tal:attributes="action request.fa_url(request.model_name)"
         >
         <div tal:content="structure fs.render()" />
-        <p class="fa_field">
-          <a class="ui-widget-header ui-widget-link ui-widget-button ui-corner-all" href="#">
-            <input type="submit" value="${F_('Save')}" />
-          </a>
-          <a class="ui-widget-header ui-widget-link ui-corner-all"
-             tal:attributes="href request.fa_url(request.model_name)">
-            <span class="ui-icon ui-icon-circle-arrow-w"></span>
-            ${'Cancel'}
-          </a>
+        <p class="fa_field" tal:content="structure actions.buttons(request)">
         </p>
       </form>
     </div>

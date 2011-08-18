@@ -217,18 +217,17 @@ man_pages = [
 
 
 # Example configuration for intersphinx: refer to the Python standard library.
-intersphinx_mapping = {'http://docs.python.org/': None}
+intersphinx_mapping = {
+    'pyramid': ('http://docs.pylonsproject.org/projects/pyramid/1.0', None),
+    'formalchemy': ('http://docs.formalchemy.org/formalchemy/', None),
+  }
 
 html_theme = 'nature'
 rstctl_exclude = ['fa.jquery.app', 'fa.jquery.pylons']
 
-try:
-    import rstctl
-    extensions.append('rstctl.sphinx')
-except ImportError:
-    pass
-else:
-    del rstctl
+import rstctl
+extensions.append('rstctl.sphinx')
+del rstctl
 
 from os import path
 pkg_dir = path.abspath(__file__).split('/docs')[0]

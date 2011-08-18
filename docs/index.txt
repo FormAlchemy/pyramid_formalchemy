@@ -89,6 +89,18 @@ It's better to enable the jquery features like this:
 
 That's it. Now launch your app, browse ``/admin/`` and enjoy it !
 
+
+About Models
+=============
+
+Here is a typical model to use full features of pyramid_formalchemy. Notice
+that the fields are defined using :py:func:`formalchemy.Column`:
+
+.. literalinclude:: ../../formalchemy_project/models.py
+   :pyobject: User
+
+See also :mod:`pyramid_formalchemy.actions` to customize form buttons per model.
+
 Advanced usage
 ===============
 
@@ -142,6 +154,16 @@ and per Model::
                                   request_method='GET',
                                   permission='view')
 
+Events
+=======
+
+pyramid_formalchemy got some hooks to help you to customize things. See :mod:`pyramid_formalchemy.events`.
+
+Actions
+=======
+
+pyramid_formalchemy allow you to customize links and actions of your views. See :mod:`pyramid_formalchemy.actions`.
+
 Setting permissions
 ===================
 
@@ -162,22 +184,11 @@ You can also add an ``__acl__`` attribute to your model class:
 .. literalinclude:: ../pyramidapp/pyramidapp/models.py
    :pyobject: Bar
 
-Event subscription
-==================
-
-``pyramid_formalchemy`` provides four events: ``IBeforeValidateEvent``, 
-``IAfterSyncEvent``, ``IBeforeDeleteEvent`` and ``IBeforeRenderEvent``. 
-There are also two more specific render evnts: ``IBeforeShowRenderEvent``
-and ``IBeforeEditRenderEvent``. You can use ``pyramid_formalchemy.events.subscriber`` 
-decorator to subscribe:
-
-.. literalinclude:: ../pyramidapp/pyramidapp/events.py
-
 Api
 ===
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
 
    modules/index.txt
 
