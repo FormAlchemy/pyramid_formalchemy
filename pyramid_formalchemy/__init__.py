@@ -11,7 +11,8 @@ def includeme(config):
     config.add_directive('formalchemy_model_view', 'pyramid_formalchemy.formalchemy_model_view')
     config.registry.pyramid_formalchemy_views = {}
 
-    config.add_route('set_language', '/set_language', 'pyramid_formalchemy.views.set_language')
+    config.add_route('set_language', '/set_language')
+    config.add_view('pyramid_formalchemy.views.set_language', route_name='set_language')
 
 def formalchemy_model_view(config, route_name,
                            model=None,
@@ -95,7 +96,8 @@ def formalchemy_admin(config, route_name,
         url = request.route_url(route_name, traverse=(), **matchdict)
         return HTTPFound(location=url)
 
-    config.add_route('%s_redirect' % route_name, route_name, redirect)
+    config.add_route('%s_redirect' % route_name, route_name)
+    config.add_view(redirect, route_name = '%s_redirect' % route_name)
 
     config.add_route(route_name, '%s/*traverse' % route_name,
                      factory=factory)
