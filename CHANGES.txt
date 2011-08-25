@@ -1,7 +1,9 @@
 0.4.2 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Pyramid 1.1 compatibility (amleczko)
+
+- Adding IBeforeListingRenderEvent (amleczko)
 
 
 0.4.1 (2011-07-01)
