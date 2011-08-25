@@ -100,7 +100,7 @@ class Models(Base):
 
         self.request.model_name = item
         model_class = self.get_model()
-        mixin_name = '%sCustom%s_%s_%s' % (model_class.__name__, ModelListing.__name__,
+        mixin_name = '%sCustom%s_%s__%s' % (model_class.__name__, ModelListing.__name__,
                                            self.request.route_name, self.request.method)
         mixin = type(mixin_name, (ModelListing, ), {})
         factory = self.request.registry.pyramid_formalchemy_views.get(mixin.__name__, mixin)
@@ -134,8 +134,12 @@ class ModelListing(Base):
             self.request.format = item
             return self
 
-        mixin_name = '%sCustom%s_%s_%s' % (self.request.model_class.__name__, Model.__name__,
-                                           self.request.route_name, self.request.method)
+        name = self.request.path.split('/')[-1] #view name
+        if name == item:
+            name = ''
+
+        mixin_name = '%sCustom%s_%s_%s_%s' % (self.request.model_class.__name__, Model.__name__,
+                                              self.request.route_name, name, self.request.method)
         mixin = type(str(mixin_name), (Model, ), {})
         factory = self.request.registry.pyramid_formalchemy_views.get(mixin.__name__, mixin)
         try:

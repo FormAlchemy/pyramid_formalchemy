@@ -5,6 +5,8 @@
 
 - Adding IBeforeListingRenderEvent (amleczko)
 
+- Fix problem with formalchemy_model_view registration (amleczko) 
+
 
 0.4.1 (2011-07-01)
 ------------------
