@@ -53,7 +53,7 @@ created (The example assumes that the Configurator instance is stored
 under the name "config")::
 
   ...
-  config.include(myapp.fainit)
+  config.include('myapp.fainit')
   ...
 
 More details are explained in fareadme.txt.
