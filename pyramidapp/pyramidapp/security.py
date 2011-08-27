@@ -28,8 +28,10 @@ def main(global_config, **settings):
                           authorization_policy=ACLAuthorizationPolicy())
 
     config.add_static_view('static', 'pyramidapp:static')
-    config.add_route('home', '/', view='pyramidapp.views.my_view',
-                     view_renderer='templates/mytemplate.pt')
+    config.add_route('home', '/')
+    config.add_view('pyramidapp.views.my_view',
+                    route_name='home',
+                    renderer='templates/mytemplate.pt')
 
     # pyramid_formalchemy's configuration
     config.include('pyramid_formalchemy')
