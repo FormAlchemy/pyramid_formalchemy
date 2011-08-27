@@ -25,8 +25,8 @@ def formalchemy_model_view(config, route_name,
 
     model = config.maybe_dotted(model)
     context = config.maybe_dotted(context)
-    mixin_name = '%sCustom%s_%s_%s' % (model.__name__, context.__name__,
-                                       route_name, kwargs.get('request_method','GET'))
+    mixin_name = '%sCustom%s_%s_%s_%s' % (model.__name__, context.__name__,
+                                       route_name, name, kwargs.get('request_method','GET'))
 
     factory = type(mixin_name, (context,), {})
     config.registry.pyramid_formalchemy_views[factory.__name__] = factory
@@ -98,7 +98,8 @@ def formalchemy_admin(config, route_name,
         url = request.route_url(route_name, traverse=(), **matchdict)
         return HTTPFound(location=url)
 
-    config.add_route('%s_redirect' % route_name, route_name, redirect)
+    config.add_route('%s_redirect' % route_name, route_name)
+    config.add_view(redirect, route_name = '%s_redirect' % route_name)
 
     config.add_route(route_name, '%s/*traverse' % route_name,
                      factory=factory)

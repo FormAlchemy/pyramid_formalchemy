@@ -27,3 +27,8 @@ def before_foo_show_render(context, event):
 @events.subscriber([Foo, events.IBeforeEditRenderEvent])
 def before_foo_edit_render(context, event):
     log.info("%r foo edit will be rendered" % event.object)
+
+@events.subscriber([Foo, events.IBeforeListingRenderEvent])
+def before_foo_listing_render(context, event):
+    log.info("%r listing will be rendered" % context)
+

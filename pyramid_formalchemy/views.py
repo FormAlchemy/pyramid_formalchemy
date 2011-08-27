@@ -306,6 +306,11 @@ class ModelView(object):
         fs = self.get_grid()
         fs = fs.bind(instances=page, request=self.request)
         fs.readonly = True
+
+        event = events.BeforeRenderEvent(self.request.model_class(), self.request, fs=fs, page=page)
+        alsoProvides(event, events.IBeforeListingRenderEvent)
+        zope.component.event.objectEventNotify(event)
+
         if self.request.format == 'json':
             values = []
             request = self.request

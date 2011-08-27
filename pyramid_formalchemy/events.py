@@ -30,12 +30,16 @@ class IBeforeRenderEvent(zope.component.interfaces.IObjectEvent):
     """A model will rendered"""
 
 
+class IBeforeListingRenderEvent(IBeforeRenderEvent):
+    """Listing will be rendered"""
+
+
 class IBeforeShowRenderEvent(IBeforeRenderEvent):
     """Show will be rendered"""
 
 
 class IBeforeEditRenderEvent(IBeforeRenderEvent):
-    """Show will be rendered"""
+    """Edit will be rendered"""
 
 
 class BeforeValidateEvent(zope.component.interfaces.ObjectEvent):
