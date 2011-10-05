@@ -1,0 +1,62 @@
+# Translations template for pyramid_formalchemy.
+# Copyright (C) 2011 ORGANIZATION
+# This file is distributed under the same license as the pyramid_formalchemy
+# project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2011.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: pyramid_formalchemy 0.4.2dev\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2011-08-14 15:23+0200\n"
+"PO-Revision-Date: 2011-10-05 14:32+0100\n"
+"Last-Translator: Andreas Kaiser <kaiser@xo7.de>\n"
+"Language-Team: GERMAN <support@xo7.de>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 0.9.6\n"
+"X-Poedit-Language: German\n"
+"X-Poedit-Country: GERMANY\n"
+"X-Poedit-SourceCharset: utf-8\n"
+
+#: pyramid_formalchemy/actions.py:327
+msgid "French"
+msgstr "Französisch"
+
+#: pyramid_formalchemy/actions.py:328
+msgid "English"
+msgstr "Englisch"
+
+#: pyramid_formalchemy/actions.py:329
+msgid "Brazilian"
+msgstr "Brasilianisch"
+
+#: pyramid_formalchemy/actions.py:391
+msgid "New ${model_label}"
+msgstr "Hinzufügen: ${model_label}"
+
+#: pyramid_formalchemy/actions.py:400
+msgid "Save"
+msgstr "Speichern"
+
+#: pyramid_formalchemy/actions.py:408
+msgid "Save and add another"
+msgstr "Speichern und weitere Hinzufügen"
+
+#: pyramid_formalchemy/actions.py:418
+msgid "Edit"
+msgstr "Bearbeiten"
+
+#: pyramid_formalchemy/actions.py:426
+msgid "Back"
+msgstr "Zurück"
+
+#: pyramid_formalchemy/actions.py:433
+msgid "Delete"
+msgstr "Löschen"
+
+#: pyramid_formalchemy/actions.py:444
+msgid "Cancel"
+msgstr "Abbrechen"
+
