@@ -9,7 +9,7 @@ CHANGES = open(os.path.join(here, 'CHANGES.txt')).read()
 requires = ['pyramid>=1.1', 'WebError', 'FormAlchemy>=1.3.8', 'Babel']
 
 setup(name='pyramid_formalchemy',
-      version='0.4.2dev',
+      version='0.4.3dev',
       description='FormAlchemy plugins and helpers for Pyramid',
       long_description=README + '\n\nCHANGES\n=======\n\n' + CHANGES,
       classifiers=[

@@ -1,4 +1,9 @@
-0.4.2 (unreleased)
+0.4.3 (unreleased)
+------------------
+
+- dev changes go here
+
+0.4.2 (2011-11-03)
 ------------------
 
 - Pyramid 1.1 compatibility (amleczko)
