@@ -23,25 +23,29 @@ install_requires. You must now update your environment, in case of
 buildout, by running a new buildout. If you want nicer jquery
 functionality also add a dependency for ``fa.jquery``.
 
-pyramid_formalchemy also provides a paster template. It can be used to
+pyramid_formalchemy also provides a pyramid scaffold. It can be used to
 add a skeleton to an existing project or to create a new project. If you
 create a new project, you must first install pyramid_formalchemy in
 your python environment, either with pip::
 
-  $ pip install pyramid_formalchemy
+  $ pip install pyramid_formalchemy pyramid_fanstatic fa.jquery
 
 or with easy_install::
 
-  $ easy_install pyramid_formalchemy
+  $ easy_install pyramid_formalchemy pyramid_fanstatic fa.jquery
 
-Only after that, the paster template becomes available.
+Only after that, the pyramid scaffold becomes available.
 The template was made with the idea that it can be used to extend
 existing applications. It does not create an app for you. For
-bootstrapping your app, you need another paster template. The provided
-template works well with pyramid_alchemy, pyramid_routesalchemy and
-akhet. To bootstrap an application, call paster like that::
+bootstrapping your app, you need another pyramid scaffold. The provided
+template works well with ``alchemy``, ``Akhet``. To bootstrap an application,
+call paster like that::
 
-  $ paster create -t akhet -t pyramid_fa myapp
+  $ pcreate -s alchemy -s pyramid_fa myapp
+
+Or for ``Akhet``::
+
+  $ pcreate -s akhet -s pyramid_fa myapp
 
 The application is created by akhet, akhet does not know about
 pyramid_formalchemy, and pyramid_formalchemy cannot modify the app
@@ -56,14 +60,14 @@ under the name "config")::
   config.include('myapp.fainit')
   ...
 
-More details are explained in fareadme.txt.
+More details are explained in ``myapp/README_FORMALCHEMY.txt``.
 The process is the same for other templates. For the pyramid ones
 there are additional changes necessary that are also explained in fareadme.txt
 
 To add the minimum configuration to an existing application, you
 should be able to run::
 
-  $ paster create -t pyramid_fa myapp
+  $ pcreate -s pyramid_fa myapp
 
 All files that paster creates are prefixed with fa, and should not
 interfere with existing code. The other customizations described for
@@ -128,7 +132,7 @@ Having fun with the query_factory parameter
 .. literalinclude:: ../../formalchemy_project/__init__.py
    :pyobject: main
 
-Custom views per model 
+Custom views per model
 ----------------------
 
 You can also register custom CRUD views per ModelListing::
