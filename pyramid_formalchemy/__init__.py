@@ -74,6 +74,7 @@ def formalchemy_admin(config, route_name,
         models = config.maybe_dotted(models)
     if forms:
         forms = config.maybe_dotted(forms)
+
     if session_factory:
         session_factory = config.maybe_dotted(session_factory)
 

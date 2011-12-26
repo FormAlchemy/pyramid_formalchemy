@@ -1,8 +1,11 @@
 This script does not want to tell you how your app should be set up.
 As such, it does not set an app up for you.
 
-Please use this template together with other templates, like akhet, 
+Please use this template together with other templates, like Akhet,
 pyramid_routesalchemy or pyramid_alchemy.
+
+You should add pyramid_fanstatic and fa.jquery as dependencies in your
+setup.py.
 
 To finally include FormAlchemy, modify your main method were you
 create the wsgi application, and include {{package}}.fainit to the
@@ -21,3 +24,5 @@ If you are using akhet, nothing special needs to be done.
 
 After this modifications, you should find the FormAlchemy Admin
 Interface under /admin
+
+
