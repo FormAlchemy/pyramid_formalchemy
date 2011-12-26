@@ -10,7 +10,7 @@ requires = ['pyramid>=1.1', 'WebError', 'FormAlchemy>=1.3.8', 'Babel',
             'zope.component']
 
 setup(name='pyramid_formalchemy',
-      version='0.4.3dev',
+      version='0.4.3',
       description='FormAlchemy plugins and helpers for Pyramid',
       long_description=README + '\n\nCHANGES\n=======\n\n' + CHANGES,
       classifiers=[

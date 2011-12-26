@@ -2,31 +2,41 @@
 from pyramid.httpexceptions import HTTPFound
 from pyramid_formalchemy.resources import Models
 
+
 def includeme(config):
     """include formalchemy's zcml"""
-    config.add_translation_dirs('formalchemy:i18n_resources/', 'pyramid_formalchemy:locale/')
+    config.add_translation_dirs('formalchemy:i18n_resources/',
+                                'pyramid_formalchemy:locale/')
     config.add_static_view('fa_admin', 'pyramid_formalchemy:static')
-    config.add_directive('formalchemy_admin', 'pyramid_formalchemy.formalchemy_admin')
-    config.add_directive('formalchemy_model', 'pyramid_formalchemy.formalchemy_model')
-    config.add_directive('formalchemy_model_view', 'pyramid_formalchemy.formalchemy_model_view')
+    config.add_directive('formalchemy_admin',
+                         'pyramid_formalchemy.formalchemy_admin')
+    config.add_directive('formalchemy_model',
+                         'pyramid_formalchemy.formalchemy_model')
+    config.add_directive('formalchemy_model_view',
+                         'pyramid_formalchemy.formalchemy_model_view')
     config.registry.pyramid_formalchemy_views = {}
 
     config.add_route('set_language', '/set_language')
-    config.add_view('pyramid_formalchemy.views.set_language', route_name='set_language')
+    config.add_view('pyramid_formalchemy.views.set_language',
+                    route_name='set_language')
     config.add_route('set_theme', '/set_theme')
-    config.add_view('pyramid_formalchemy.views.set_theme', route_name='set_theme')
+    config.add_view('pyramid_formalchemy.views.set_theme',
+                    route_name='set_theme')
+
 
 def formalchemy_model_view(config, route_name,
                            model=None,
                            name='',
                            view='pyramid_formalchemy.views.ModelView',
-                           context='pyramid_formalchemy.resources.Model', **kwargs):
+                           context='pyramid_formalchemy.resources.Model',
+                           **kwargs):
     """custom model view registration"""
 
     model = config.maybe_dotted(model)
     context = config.maybe_dotted(context)
     mixin_name = '%sCustom%s_%s_%s_%s' % (model.__name__, context.__name__,
-                                       route_name, name, kwargs.get('request_method','GET'))
+                                       route_name, name,
+                                       kwargs.get('request_method', 'GET'))
 
     factory = type(mixin_name, (context,), {})
     config.registry.pyramid_formalchemy_views[factory.__name__] = factory
@@ -38,12 +48,15 @@ def formalchemy_model_view(config, route_name,
                     name=name,
                     **kw)
 
+
 def formalchemy_model(config, route_name,
                       factory='pyramid_formalchemy.resources.ModelListing',
-                      view='pyramid_formalchemy.views.ModelView', model=None, **kwargs):
+                      view='pyramid_formalchemy.views.ModelView', model=None,
+                      **kwargs):
     model = config.maybe_dotted(model)
     return formalchemy_admin(config, route_name, factory=factory,
                              view=view, models=[model], model=model, **kwargs)
+
 
 def formalchemy_admin(config, route_name,
                       factory='pyramid_formalchemy.resources.Models',
@@ -70,7 +83,8 @@ def formalchemy_admin(config, route_name,
         if not forms:
             forms = config.maybe_dotted('%s.forms' % package)
         if not session_factory:
-            session_factory = config.maybe_dotted('%s.models.DBSession' % package)
+            session_factory = config.maybe_dotted(
+                                        '%s.models.DBSession' % package)
 
     if not query_factory:
         def query_factory(request, query, id=None):
@@ -90,7 +104,8 @@ def formalchemy_admin(config, route_name,
 
     factory = config.maybe_dotted(factory)
 
-    factory = type('%s_%s' % (factory.__name__, route_name), (factory,), factory_args)
+    factory = type('%s_%s' % (factory.__name__, route_name), (factory,),
+                   factory_args)
 
     def redirect(request):
         """redirect /route_name to /route_name/"""
@@ -99,19 +114,20 @@ def formalchemy_admin(config, route_name,
         return HTTPFound(location=url)
 
     config.add_route('%s_redirect' % route_name, route_name)
-    config.add_view(redirect, route_name = '%s_redirect' % route_name)
+    config.add_view(redirect, route_name='%s_redirect' % route_name)
 
     config.add_route(route_name, '%s/*traverse' % route_name,
                      factory=factory)
 
     if issubclass(factory, Models):
         # don't want all models
-        config.add_view(context=factory,
-                        renderer='pyramid_formalchemy:templates/admin/models.pt',
-                        attr='models',
-                        request_method='GET',
-                        permission='view',
-                        **kw)
+        config.add_view(
+                context=factory,
+                renderer='pyramid_formalchemy:templates/admin/models.pt',
+                attr='models',
+                request_method='GET',
+                permission='view',
+                **kw)
 
     config.add_view(context='pyramid_formalchemy.resources.ModelListing',
                     renderer='pyramid_formalchemy:templates/admin/listing.pt',
@@ -188,4 +204,3 @@ def formalchemy_admin(config, route_name,
                     request_method='GET',
                     permission='view',
                     **kw)
-
