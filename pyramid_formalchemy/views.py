@@ -238,7 +238,7 @@ class ModelView(object):
         if fs is None:
             fs = getattr(request.forms, request.model_name,
                          self.fieldset_class)
-        if fs is self.fieldset_class:
+        if isinstance(fs, type) and issubclass(fs, self.fieldset_class):
             fs = fs(request.model_class)
             if not isinstance(request.forms, list):
                 # add default fieldset to form module eg: caching
