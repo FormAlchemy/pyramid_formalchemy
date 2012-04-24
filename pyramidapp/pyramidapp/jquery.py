@@ -17,6 +17,7 @@ def main(global_config, **settings):
                     renderer='templates/mytemplate.pt')
 
     # pyramid_formalchemy's configuration
+    config.include('pyramid_fanstatic')
     config.include('pyramid_formalchemy')
     config.include('fa.jquery')
 
