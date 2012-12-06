@@ -9,7 +9,7 @@ CHANGES = open(os.path.join(here, 'CHANGES.txt')).read()
 requires = ['pyramid>=1.1', 'WebError', 'FormAlchemy>=1.3.8', 'Babel',
             'zope.component']
 
-version = '0.4.3'
+version = '0.4.4dev'
 
 setup(name='pyramid_formalchemy',
       version=version,
