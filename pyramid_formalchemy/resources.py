@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from pyramid.exceptions import NotFound
 from pyramid_formalchemy import actions
-from sqlalchemy import exceptions as sqlalchemy_exceptions
+from sqlalchemy import exc as sqlalchemy_exceptions
 import logging
 
 log = logging.getLogger(__name__)
