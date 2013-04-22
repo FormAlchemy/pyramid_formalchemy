@@ -70,7 +70,11 @@ class Base(object):
     def get_instance(self):
         model = self.get_model()
         session = self.request.session_factory()
-        return session.query(model).get(self.request.model_id)
+        try:
+            return session.query(model).get(self.request.model_id)
+        except sqlalchemy_exceptions.InvalidRequestError:
+            # pyramid 1.4 compat
+            return session.query(model.context).get(self.request.model_id)
 
     def _fa_url(self, *args, **kwargs):
         matchdict = self.request.matchdict.copy()
